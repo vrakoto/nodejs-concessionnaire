@@ -1,0 +1,34 @@
+<form method="post" action="/inscription" class="container border p-3 mt-5">
+
+    <% if (typeof messageFormulaire !== 'undefined') { %>
+        <div class="alert alert-danger text-center">
+            <%= messageFormulaire %>
+        </div>
+    <% } %>
+
+    <div class="mb-3">
+        <label for="nom" class="form-label">Nom</label>
+        <input type="text" name="nom" class="form-control" id="nom" autofocus>
+    </div>
+
+    <div class="mb-3">
+        <label for="prenom" class="form-label">Prénom</label>
+        <input type="text" name="prenom" class="form-control" id="prenom">
+    </div>
+
+    <div class="mb-3">
+        <label for="ville" class="form-label">Ville</label>
+        <input type="text" name="ville" class="form-control" id="ville">
+    </div>
+    
+    <div class="mb-3">
+        <label for="mdp" class="form-label">Mot de passe</label>
+        <input type="password" name="mdp" class="form-control" id="mdp">
+    </div>
+
+    <div class="mb-3">
+        <label for="mdp_c" class="form-label">Confirmez le mot de passe</label>
+        <input type="password" name="mdp_c" class="form-control" id="mdp_c">
+    </div>
+    <button type="submit" class="btn btn-success">S'inscrire</button>
+</form>

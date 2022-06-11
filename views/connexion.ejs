@@ -1,0 +1,18 @@
+<form method="post" action="/connexion" class="container border p-3 mt-5">
+
+    <% if (typeof messageFormulaire !== 'undefined') { %>
+        <div class="alert alert-danger text-center">
+            <%= messageFormulaire %>
+        </div>
+    <% } %>
+
+    <div class="mb-3">
+        <label for="identifiant" class="form-label">Identifiant</label>
+        <input type="text" class="form-control" name="identifiant" id="identifiant" autofocus>
+    </div>
+    <div class="mb-3">
+        <label for="mdp" class="form-label">Mot de passe</label>
+        <input type="password" class="form-control" id="mdp">
+    </div>
+    <button type="submit" class="btn btn-primary">Se connecter</button>
+</form>

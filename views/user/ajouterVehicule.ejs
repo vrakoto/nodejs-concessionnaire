@@ -1,0 +1,35 @@
+<form method="post" action="/vehicule" class="container border p-3 mt-5">
+
+    <% if (typeof messageFormulaire !== 'undefined') { %>
+        <div class="alert alert-danger text-center">
+            Erreur formulaire :
+            <ul>
+                <% for (const [key, value] of Object.entries(messageFormulaire)) { %>
+                <li><%= key + ': ' + value %></li>
+                <% } %>
+            </ul>
+        </div>
+        
+    <% } %>
+
+    <div class="mb-3">
+        <label for="marque" class="form-label">Marque</label>
+        <input type="text" name="marque" class="form-control" id="marque" autofocus>
+    </div>
+
+    <div class="mb-3">
+        <label for="modele" class="form-label">Modèle</label>
+        <input type="text" name="modele" class="form-control" id="modele">
+    </div>
+
+    <div class="mb-3">
+        <label for="annee" class="form-label">Année</label>
+        <input type="number" name="annee" class="form-control" id="annee" step="1" min="1930" max="<%= new Date().getFullYear() %>">
+    </div>
+
+    <div class="mb-3">
+        <label for="km" class="form-label">KM</label>
+        <input type="number" name="km" class="form-control" id="km" step="1" min="0" max="1500000">
+    </div>
+    <button type="submit" class="btn btn-success">Ajouter le véhicule</button>
+</form>
