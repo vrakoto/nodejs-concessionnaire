@@ -1,3 +1,11 @@
 label {
   margin-bottom: 0 !important;
 }
+
+.reduceForm {
+  width: 400px;
+}
+
+.reduceForm #description {
+  height: 200px;
+}

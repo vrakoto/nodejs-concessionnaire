@@ -1,0 +1,61 @@
+<form method="post" action="/vehicule" class="reduceForm container border p-3 mt-5">
+
+    <% if (typeof messageFormulaire !== 'undefined') { %>
+        <div class="alert alert-danger text-center">
+            Erreur formulaire :
+            <ul>
+                <% for (const [key, value] of Object.entries(messageFormulaire)) { %>
+                <li><%= key + ': ' + value %></li>
+                <% } %>
+            </ul>
+        </div>
+    <% } else if (typeof messageFormulaire === 'string') { %>
+        <div class="alert alert-success text-center">
+            Véhicule ajouté dans la vente !
+        </div>
+    <% } %>
+
+    <div class="mb-3">
+        <label for="marque" class="form-label">Marque</label>
+        <input type="text" name="marque" class="form-control" id="marque" autofocus>
+    </div>
+
+    <div class="mb-3">
+        <label for="modele" class="form-label">Modèle</label>
+        <input type="text" name="modele" class="form-control" id="modele">
+    </div>
+
+    <div class="mb-3">
+        <label for="boite" class="form-label">Boite de transmission</label>
+        <input type="text" name="boite" class="form-control" id="boite">
+    </div>
+
+    <div class="mb-3">
+        <label for="energie" class="form-label">Energie</label>
+        <input type="text" name="energie" class="form-control" id="energie">
+    </div>
+
+    <div class="mb-3">
+        <label for="annee" class="form-label">Année</label>
+        <input type="number" name="annee" class="form-control" id="annee">
+    </div>
+
+    <div class="mb-3">
+        <label for="km" class="form-label">KM</label>
+        <input type="number" name="km" class="form-control" id="km" step="1" min="0" max="1500000">
+    </div>
+
+    <hr class="mt-5">
+
+    <div class="form-floating mb-3">
+        <textarea class="form-control" placeholder="Laissez un commentaire" name="description" id="description"></textarea>
+        <label for="description" class="form-label">Description</label>
+    </div>
+
+    <div class="mb-3">
+        <label for="prix" class="form-label">Prix</label>
+        <input type="number" name="prix" class="form-control" id="prix" step="1" min="0" max="30000000">
+    </div>
+
+    <button type="submit" class="btn btn-success">Mettre en vente</button>
+</form>

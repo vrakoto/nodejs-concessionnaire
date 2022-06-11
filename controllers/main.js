@@ -42,9 +42,9 @@ module.exports = {
         });
     },
 
-    ajoutVehicule: (req, res) => {
+    vendreVehicule: (req, res) => {
         return res.render(pathBodyHTML, {
-            page: "./user/ajouterVehicule",
+            page: "./user/vendreVehicule",
             titre: "Concessionnaire - Ajouter un véhicule",
             messageFormulaire: req.session.message
         });

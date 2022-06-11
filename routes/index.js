@@ -12,9 +12,11 @@ router.route('/connexion').post(userController.seConnecter)
 router.route('/inscription').get(mainController.inscription)
 router.route('/inscription').post(userController.createUser)
 
-router.route('/ajouterVehicule').get(mainController.ajoutVehicule)
+router.route('/vendreVehicule').get(mainController.vendreVehicule)
 
 router.route('/vehicule/:id').get(vehiculeController.getVehicule)
 router.route('/vehicule').post(vehiculeController.createVehicule)
+
+router.route('/deconnexion').get(userController.deconnexion)
 
 module.exports = router;

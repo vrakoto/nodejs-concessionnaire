@@ -34,8 +34,7 @@ app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist
 app.use('/jsBootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')))
 
 app.use((req, res, next) => {
-  res.locals.login = "62a0e001617d74a26724fd81"
-  // res.locals.login = req.session.login;
+  res.locals.auth = req.cookies['auth']
   next();
 });
 
@@ -50,8 +49,6 @@ mongoose.connect(`mongodb+srv://${id}:${mdp}@cluster0.ftrta.mongodb.net/?retryWr
 }).catch (err => {
     console.log(err);
 })
-
-
 
 app.use(function(req, res, next) {
   next(createError(404));

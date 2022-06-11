@@ -15,16 +15,18 @@ module.exports = {
 
             return res.render('../views/partials/body', {
                 titre: 'Concessionnaire - Fiche Véhicule',
-                page: 'vehicule'
+                page: 'vehicule',
+                vehicule
             })
         })
     },
 
     createVehicule: (req, res) => {
-        const {marque, modele, annee, km} = req.body
-
         let erreurs = {}
         const currentYear = new Date().getFullYear()
+        const vendeur = res.session.login
+        const {marque, modele, energie, boite, annee, km, description, prix} = req.body
+        const vehicule = new VehiculeModel({vendeur, marque, modele, energie, boite, annee, km, description, prix})
 
         for (const [key, value] of Object.entries(req.body)) {
             if (value.trim() === '') {
@@ -32,12 +34,16 @@ module.exports = {
             }
         }
 
-        if (annee < 1950 || annee > currentYear) {
+        /* if (annee < 1950 || annee > currentYear) {
             erreurs['annee'] = "L'année doit être comprit entre 1950 et " + currentYear
-        }
+        } */
 
         if (km < 0 || km > 1500000) {
             erreurs['km'] = "Le kilométrage total doit être comprit entre 0 et 1.500.000"
+        }
+
+        if (prix < 0 || prix > 30000000) {
+            erreurs['prix'] = "Le prix de vente doit être comprit entre 0 et 30.000.000"
         }
 
         if (Object.entries(erreurs).length > 0) {
@@ -45,16 +51,15 @@ module.exports = {
             return res.redirect('back')
         }
 
-        const user = new VehiculeModel({marque, modele, annee, km})
-        user.save((err) => {
+        vehicule.save((err, vehicule) => {
             if (err) {
                 return res.status(500).json({
                     status: 500,
-                    message: "Internal Error while creating the vehicle",
+                    message: "Internal Error while selling the vehicle",
                     err
                 })
             }
         })
-        return res.redirect('back')
+        // return res.redirect('back')
     }
 }

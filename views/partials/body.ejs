@@ -36,16 +36,22 @@
                         <a href="/parcourir" class="nav-link <% if (page === 'parcourir'){ %>active<% } %>">Parcourir les véhicules</a>
                     </li>
 
-                    <% if (login) { %>
+                    <% if (auth) { %>
                     <li class="nav-item">
-                        <a href="/ajouterVehicule" class="nav-link <% if (page === './user/ajouterVehicule'){ %>active<% } %>">Ajouter un véhicule</a>
+                        <a href="/vendreVehicule" class="nav-link <% if (page === './user/vendreVehicule'){ %>active<% } %>">Vendre un véhicule</a>
                     </li>
                     <% } %>
                 </ul>
+
                 <form class="d-flex" role="search">
-                    <a href="/connexion" class="btn btn-primary mx-2">Connexion</a>
-                    <a href="/inscription" class="btn btn-secondary">Inscription</a>
+                    <% if (!auth) { %>
+                        <a href="/connexion" class="btn btn-primary mx-2">Connexion</a>
+                        <a href="/inscription" class="btn btn-secondary">Inscription</a>
+                    <% } else { %>
+                        <a href="/deconnexion" class="btn btn-danger">Déconnexion</a>
+                    <% } %>
                 </form>
+
             </div>
         </div>
     </nav>
