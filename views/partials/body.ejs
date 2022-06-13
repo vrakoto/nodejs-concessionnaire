@@ -38,7 +38,7 @@
 
                     <% if (auth) { %>
                     <li class="nav-item">
-                        <a href="/vendreVehicule" class="nav-link <% if (page === './user/vendreVehicule'){ %>active<% } %>">Vendre un véhicule</a>
+                        <a href="/user/ajouter" class="nav-link <% if (page === './user/ajouterVehicule'){ %>active<% } %>">Vendre un véhicule</a>
                     </li>
                     <% } %>
                 </ul>
@@ -48,7 +48,7 @@
                         <a href="/connexion" class="btn btn-primary mx-2">Connexion</a>
                         <a href="/inscription" class="btn btn-secondary">Inscription</a>
                     <% } else { %>
-                        <a href="/deconnexion" class="btn btn-danger">Déconnexion</a>
+                        <a href="/user/deconnexion" class="btn btn-danger">Déconnexion</a>
                     <% } %>
                 </form>
 

@@ -6,7 +6,7 @@ var session = require('express-session')
 const { default: mongoose } = require('mongoose');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var userRouter = require('./routes/user');
 
 var app = express();
 
@@ -39,7 +39,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/user', userRouter);
 
 
 

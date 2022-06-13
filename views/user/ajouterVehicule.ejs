@@ -1,19 +1,6 @@
-<form method="post" action="/vehicule" class="reduceForm container border p-3 mt-5">
+<form method="post" action="/user/vehicule" class="reduceForm container border p-3 mt-5" id="formVehicule">
 
-    <% if (typeof messageFormulaire !== 'undefined') { %>
-        <div class="alert alert-danger text-center">
-            Erreur formulaire :
-            <ul>
-                <% for (const [key, value] of Object.entries(messageFormulaire)) { %>
-                <li><%= key + ': ' + value %></li>
-                <% } %>
-            </ul>
-        </div>
-    <% } else if (typeof messageFormulaire === 'string') { %>
-        <div class="alert alert-success text-center">
-            Véhicule ajouté dans la vente !
-        </div>
-    <% } %>
+    <div class="d-none alert" id="formVehiculeMessage"></div>
 
     <div class="mb-3">
         <label for="marque" class="form-label">Marque</label>
@@ -27,17 +14,30 @@
 
     <div class="mb-3">
         <label for="boite" class="form-label">Boite de transmission</label>
-        <input type="text" name="boite" class="form-control" id="boite">
+        <select class="form-select" name="boite" id="boite">
+            <option value="automatique">Automatique</option>
+            <option value="manuelle">Manuelle</option>
+            <option value="sequentielle">Séquentielle</option>
+        </select>
     </div>
 
     <div class="mb-3">
         <label for="energie" class="form-label">Energie</label>
-        <input type="text" name="energie" class="form-control" id="energie">
+        <select class="form-select" name="energie" id="energie">
+            <option value="essence">Essence</option>
+            <option value="diesel">Diesel</option>
+            <option value="electrique">Electrique</option>
+            <option value="hybride">Hybride</option>
+        </select>
     </div>
 
     <div class="mb-3">
         <label for="annee" class="form-label">Année</label>
-        <input type="number" name="annee" class="form-control" id="annee">
+        <select class="form-select" name="annee" id="annee">
+            <% for (let i = new Date().getFullYear(); i >= 1950; i--) { %>
+                <option value="<%= i %>"><%= i %></option>
+            <% } %>
+        </select>
     </div>
 
     <div class="mb-3">
@@ -59,3 +59,5 @@
 
     <button type="submit" class="btn btn-success">Mettre en vente</button>
 </form>
+
+<div class="d-none flex-wrap justify-content-around text-center mt-5" id="vehiculeRecentCreer"></div>

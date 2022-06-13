@@ -3,9 +3,13 @@ label {
 }
 
 .reduceForm {
-  width: 400px;
+  width: 500px;
 }
 
 .reduceForm #description {
   height: 200px;
+}
+
+.cardVehicule {
+  width: 15rem;
 }
