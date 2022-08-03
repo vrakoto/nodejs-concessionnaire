@@ -6,6 +6,8 @@ const userController = require('../controllers/user');
 router.route('/').get(mainController.home)
 
 router.route('/parcourir').get(mainController.parcourir)
+router.route('/parcourir/:type').get(mainController.parcourir)
+
 router.route('/connexion').get(mainController.connexion)
 router.route('/connexion').post(mainController.seConnecter)
 

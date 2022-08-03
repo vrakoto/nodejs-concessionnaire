@@ -7,12 +7,20 @@ module.exports = {
     home: (req, res) => {
         return res.render(pathBodyHTML, {
             page: "index",
-            titre: "Concessionnaire - Accueil"
+            titre: " Accueil"
         });
     },
 
     parcourir: (req, res) => {
-        VehiculeModel.find({}, (err, lesVehicules) => {
+        let titre = "Parcourir";
+        const type = (req.params.type) ? req.params.type : "all";
+        let s = {};
+        if (type !== 'all') {
+            titre = "Rechercher par " + type;
+            s = {type: type};
+        }
+
+        VehiculeModel.find(s, (err, lesVehicules) => {
             if (err) {
                 return res.status(500).json({
                     status: 500,
@@ -22,26 +30,39 @@ module.exports = {
             }
             return res.render(pathBodyHTML, {
                 page: "parcourir",
-                titre: "Concessionnaire - Parcourir",
+                titre: titre,
+                type: type,
                 lesVehicules
             });
         })
     },
 
     getVehicule: (req, res) => {
-        const {id} = req.params
+        const {id} = req.params;
+        let nomprenom = '';
+       
         VehiculeModel.findById(id, (err, vehicule) => {
             if (err) {
                 return res.status(500).json({
                     status: 500,
                     message: "Internal Error while searching the vehicle",
                     err
-                })
+                });
             }
-
+            UserModel.findById(vehicule.vendeur, (errUser, user) => {
+                if (errUser) {
+                    return res.status(500).json({
+                        status: 500,
+                        message: "Internal Error while searching the seller's information",
+                        err
+                    });
+                }
+                nomprenom = `${user.nom} ${user.prenom}`;
+            });
             return res.render('../views/partials/body', {
-                titre: 'Concessionnaire - Fiche Véhicule',
+                titre: 'Fiche Véhicule',
                 page: 'vehicule',
+                nomprenom,
                 vehicule
             })
         })
@@ -50,7 +71,7 @@ module.exports = {
     connexion: (req, res) => {
         return res.render(pathBodyHTML, {
             page: "connexion",
-            titre: "Concessionnaire - Connexion",
+            titre: "Connexion",
             messageFormulaire: req.session.message
         });
     },
@@ -83,7 +104,7 @@ module.exports = {
     inscription: (req, res) => {
         return res.render(pathBodyHTML, {
             page: "inscription",
-            titre: "Concessionnaire - Inscription",
+            titre: "Inscription",
             messageFormulaire: req.session.message
         });
     },

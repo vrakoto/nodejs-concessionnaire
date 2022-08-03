@@ -1,39 +1,46 @@
 $(document).ready(function() {
     $('#formVehicule').on('submit', function (e) {
         e.preventDefault()
-        const forms = $('#formVehicule').serialize()
+        const forms = $('#formVehicule')
         const formMessage = $('#formVehiculeMessage')
+        const firstFieldToFocus = $('#image') 
         const vehiculeRecentCreer = $('#vehiculeRecentCreer')
         
         $.ajax({
             url: '/user/vehicule',
             method: 'POST',
-            data: forms,
+            data: forms.serialize(),
             success: function (res) {
                 const type = res.type
 
-                formMessage.empty()
+                formMessage.empty() // évite la duplication des messages
+                firstFieldToFocus.focus() // pointe le focus sur le premier champ
                 formMessage.removeClass('d-none')
                 formMessage.append(`<h3 class='text-center mb-0'>${res.message}</h3>`)
 
                 if (type === 'success') {
-                    const {_id, marque, modele, annee, km, prix} = res.vehicule
+                    const {_id, image, marque, modele, annee, km, prix} = res.vehicule
 
+                    forms.trigger('reset');
+                    formMessage.addClass('alert-success').removeClass('alert-danger'); // retire le précédent message de success
+
+                    // retire la bordure rouge des champs invalide
                     $('input').removeClass('is-invalid')
-                    formMessage.addClass('alert-success').removeClass('alert-danger');
+                    $('textarea').removeClass('is-invalid')
 
+                    // affiche les véhicules créé à l'instant
                     vehiculeRecentCreer.addClass('d-flex').removeClass('d-none');
-                    vehiculeRecentCreer.removeClass('d-none')
                     vehiculeRecentCreer.append(`
                     <div class="cardVehicule flex-wrap card mx-3 mt-4">
-                        <img src="https://picsum.photos/200" class="card-img-top">
+                        <img src="${image}" class="card-img-top">
                         <div class="card-body text-center">
                             <h5 class="card-title" id="modele_marque">${marque} ${modele}</h5>
                             <hr>
                             <p class="card-text mt-0 mb-0" id="annee">Année: ${annee}</p>
                             <p class="card-text mt-0 mb-0" id="km">Kilométrage total: ${km} km</p>
                             <p class="card-text mt-0" id="km">Prix TTC: ${prix} €</p>
-                            <a href="/vehicule/${_id}" class="btn btn-primary">Consulter le véhicule</a>
+                            <a href="/vehicule/${_id}" class="btn btn-primary"><i class="fa-solid fa-up-right-from-square"></i></a>
+                            <button class="btn btn-danger" onclick="supprimerVehicule(${vehicule._id})"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>`)
                 } else {
@@ -57,3 +64,23 @@ $(document).ready(function() {
         })
     })
 })
+
+function supprimerVehicule(idVehicule, e) {
+    $.ajax({
+        url: '/user/supprimerVehicule',
+        method: 'POST',
+        data: 'idVehicule=' + idVehicule,
+        success: function (res) {
+            const {type, message} = res
+
+            if (type === 'success') {
+                console.log(message);
+            } else {
+                console.log(message);
+            }
+        },
+        error: function (err) {
+            console.log(err);
+        }
+    })
+}

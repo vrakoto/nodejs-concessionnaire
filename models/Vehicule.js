@@ -11,6 +11,8 @@ const Vehicule = new Schema({
         ref: 'User',
         required: true
     },
+    type: String,
+    image: String,
     marque: String,
     modele: String,
     energie: String,

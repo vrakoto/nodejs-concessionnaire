@@ -3,8 +3,22 @@
     <div class="d-none alert" id="formVehiculeMessage"></div>
 
     <div class="mb-3">
+        <label for="type" class="form-label">Sélectionner le type du véhicule correspondant</label>
+        <select class="form-select" id="type" name="type">
+            <option value="voiture" selected>Voiture</option>
+            <option value="moto">Moto</option>
+        </select>
+    </div>
+
+
+    <div class="mb-3">
+        <label for="image" class="form-label">Image (URL)</label>
+        <input type="text" name="image" class="form-control" id="image" autofocus>
+    </div>
+
+    <div class="mb-3">
         <label for="marque" class="form-label">Marque</label>
-        <input type="text" name="marque" class="form-control" id="marque" autofocus>
+        <input type="text" name="marque" class="form-control" id="marque">
     </div>
 
     <div class="mb-3">

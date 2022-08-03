@@ -16,12 +16,13 @@ app.set('view engine', 'ejs');
 
 // conf express session
 app.use(session({
-  secret: 'mySecret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    expires: 1000
-  }})
+    secret: 'mySecret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: 1000
+    }
+})
 );
 
 app.use(express.json());
@@ -34,35 +35,33 @@ app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist
 app.use('/jsBootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')))
 
 app.use((req, res, next) => {
-  res.locals.auth = req.cookies['auth']
-  next();
+    res.locals.auth = req.cookies['auth']
+    next();
 });
 
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 
-
-
-mongoose.connect(`mongodb+srv://${id}:${mdp}@cluster0.ftrta.mongodb.net/?retryWrites=true&w=majority`, {
+mongoose.connect('mongodb://localhost:27017/myapp', {
     useNewUrlParser: true,
     useUnifiedTopology: true
-}).catch (err => {
+}).catch(err => {
     console.log(err);
-})
+});
 
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use(function (req, res, next) {
+    next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;

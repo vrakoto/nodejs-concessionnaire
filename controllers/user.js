@@ -7,15 +7,36 @@ module.exports = {
     ajouterVehicule: (req, res) => {
         return res.render(pathBodyHTML, {
             page: "./user/ajouterVehicule",
-            titre: "Concessionnaire - Ajouter un véhicule",
+            titre: " Ajouter un véhicule",
             messageFormulaire: req.session.message
         });
     },
 
+    supprimerVehicule: (req, res) => {
+        const {idVehicule} = req.body
+        
+        VehiculeModel.findByIdAndDelete(idVehicule, (err, res) => {
+            if (err) {
+                return res.send({
+                    type: 'erreur',
+                    code: 505,
+                    message: "Erreur interne lors de la suppression du véhicule",
+                    raison: err
+                })
+            }
+
+            return res.send({
+                type: 'success',
+                code: 200,
+                message: "Vehicule supprimé !"
+            })
+        })
+    },
+
     creerVehicule: (req, res) => {
-        const {marque, modele, energie, boite, annee, km, description, prix} = req.body
+        const {type, image, marque, modele, energie, boite, annee, km, description, prix} = req.body
         const vendeur = req.cookies['auth'].identifiant
-        const vehicule = new VehiculeModel({vendeur, marque, modele, energie, boite, annee, km, description, prix})
+        const vehicule = new VehiculeModel({type, vendeur, image, marque, modele, energie, boite, annee, km, description, prix})
         
         const currentYear = new Date().getFullYear()
         let erreurs = {}
@@ -24,6 +45,10 @@ module.exports = {
             if (value.trim() === '') {
                 erreurs[key] = 'le champ est vide'
             }
+        }
+
+        if (type !== 'voiture' && type !== 'moto') {
+            erreurs['type'] = "le type du véhicule est invalide"
         }
 
         if (energie !== 'essence' && energie !== 'diesel' && energie !== 'electrique' && energie !== 'hybride') {
