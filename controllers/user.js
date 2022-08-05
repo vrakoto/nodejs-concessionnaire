@@ -1,5 +1,5 @@
-const UserModel = require('../models/User')
-const VehiculeModel = require('../models/Vehicule')
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const pathBodyHTML = '../views/partials/body';
 const bcrypt = require('bcrypt');
 
@@ -7,14 +7,14 @@ module.exports = {
     ajouterVehicule: (req, res) => {
         return res.render(pathBodyHTML, {
             page: "./user/ajouterVehicule",
-            titre: " Ajouter un véhicule",
+            titre: "Ajouter un véhicule",
             messageFormulaire: req.session.message
         });
     },
 
     supprimerVehicule: (req, res) => {
-        const {idVehicule} = req.body
-        
+        const { idVehicule } = req.body
+
         VehiculeModel.findByIdAndDelete(idVehicule, (err, res) => {
             if (err) {
                 return res.send({
@@ -34,10 +34,9 @@ module.exports = {
     },
 
     creerVehicule: (req, res) => {
-        const {type, image, marque, modele, energie, boite, annee, km, description, prix} = req.body
+        const { type, image, marque, modele, energie, boite, annee, km, description, prix } = req.body
         const vendeur = req.cookies['auth'].identifiant
-        const vehicule = new VehiculeModel({type, vendeur, image, marque, modele, energie, boite, annee, km, description, prix})
-        
+
         const currentYear = new Date().getFullYear()
         let erreurs = {}
 
@@ -81,34 +80,57 @@ module.exports = {
             })
         }
 
-        vehicule.save((err, vehicule) => {
-            if (err) {
-                return res.send({
-                    type: 'erreur',
-                    code: 505,
-                    message: "Erreur interne",
-                    raison: err
-                })
-            } else {
+        async function add() {
+            await prisma.vehicule.create({
+                data: {
+                    vendeurId: vendeur,
+                    type,
+                    image,
+                    marque,
+                    modele,
+                    energie,
+                    boite,
+                    annee: parseInt(annee),
+                    km: parseInt(km),
+                    description,
+                    prix: parseFloat(prix)
+                },
+            });
+        }
+
+        add()
+            .then(async () => {
+                await prisma.$disconnect()
                 return res.send({
                     type: 'success',
                     code: 200,
                     message: "Vehicule créé",
-                    vehicule
+                    vehicule: 'ok'
                 })
-            }
-        })
+            })
+            .catch(async (error) => {
+                await prisma.$disconnect()
+                return res.send({
+                    type: 'erreur',
+                    code: 505,
+                    message: "Error while creating the vehicle",
+                    raison: error
+                })
+            })
     },
 
-    createUser: async (req, res) => {
-        const {nom, prenom, ville} = req.body
-        let mdp = req.body.mdp
+    createUser: (req, res) => {
+        const { nom, prenom, ville, mdp, mdp_c } = req.body
         let erreurs = {}
-    
+
         for (const [key, value] of Object.entries(req.body)) {
             if (value.trim() === '') {
                 erreurs[key] = 'le champ est vide'
             }
+        }
+
+        if (mdp !== mdp_c) {
+            erreurs['mdp'] = "Les mots de passe ne correspondent pas"
         }
 
         if (Object.entries(erreurs).length > 0) {
@@ -116,22 +138,34 @@ module.exports = {
             return res.redirect('back')
         }
 
-        bcrypt.hash(mdp, 10).then(function(hash) {
-            mdp = hash
-            const user = new UserModel({nom, prenom, ville, mdp})
-            user.save((err) => {
-                if (err) {
-                    return res.status(500).json({
-                        status: 500,
-                        message: "Internal Error while creating the user",
-                        err
-                    })
-                }
-            })
-        })
+        async function create() {
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(mdp, salt);
 
-        req.session.message = "Inscription réussi, connectez-vous !"
-        return res.redirect('/connexion')
+            await prisma.utilisateur.create({
+                data: {
+                    nom,
+                    prenom,
+                    ville,
+                    mdp: hash
+                },
+            });
+        }
+
+        create()
+            .then(async () => {
+                await prisma.$disconnect()
+                req.session.message = "Inscription réussi, connectez-vous !"
+                return res.redirect('/connexion')
+            })
+            .catch(async (error) => {
+                await prisma.$disconnect()
+                return res.status(500).json({
+                    status: 500,
+                    message: "Internal Error while creating the user",
+                    err: error
+                })
+            })
     },
 
     deconnexion: (req, res) => {

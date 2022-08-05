@@ -3,7 +3,6 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var session = require('express-session')
-const { default: mongoose } = require('mongoose');
 
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
@@ -22,8 +21,7 @@ app.use(session({
     cookie: {
         expires: 1000
     }
-})
-);
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -41,13 +39,6 @@ app.use((req, res, next) => {
 
 app.use('/', indexRouter);
 app.use('/user', userRouter);
-
-mongoose.connect('mongodb://localhost:27017/myapp', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).catch(err => {
-    console.log(err);
-});
 
 app.use(function (req, res, next) {
     next(createError(404));

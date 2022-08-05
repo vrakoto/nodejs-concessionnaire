@@ -1,5 +1,5 @@
-const UserModel = require("../models/User");
-const VehiculeModel = require("../models/Vehicule");
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const pathBodyHTML = '../views/partials/body';
 const bcrypt = require('bcrypt');
 
@@ -17,55 +17,71 @@ module.exports = {
         let s = {};
         if (type !== 'all') {
             titre = "Rechercher par " + type;
-            s = {type: type};
+            s = { where: { type: type } };
         }
 
-        VehiculeModel.find(s, (err, lesVehicules) => {
-            if (err) {
+        async function getVehicules() {
+            const lesVehicules = await prisma.vehicule.findMany(s);
+            return lesVehicules;
+        }
+
+        getVehicules()
+            .then(async (lesVehicules) => {
+                await prisma.$disconnect()
+                return res.render(pathBodyHTML, {
+                    page: "parcourir",
+                    titre: titre,
+                    type: type,
+                    lesVehicules
+                });
+            })
+            .catch(async (error) => {
+                await prisma.$disconnect()
                 return res.status(500).json({
                     status: 500,
                     message: "Internal Error while searching the vehicles",
-                    err
-                })
-            }
-            return res.render(pathBodyHTML, {
-                page: "parcourir",
-                titre: titre,
-                type: type,
-                lesVehicules
-            });
-        })
+                    err: error
+                });
+            })
     },
 
     getVehicule: (req, res) => {
-        const {id} = req.params;
+        const { id } = req.params;
         let nomprenom = '';
-       
-        VehiculeModel.findById(id, (err, vehicule) => {
-            if (err) {
+
+        async function get() {
+            const vehicule = await prisma.vehicule.findUniqueOrThrow({
+                where: {
+                    id: parseInt(id)
+                },
+                include: {
+                    vendeur: {
+                        select: {
+                            nom: true,
+                            prenom: true
+                        },
+                    },
+                },
+            })
+            return vehicule
+        }
+
+        get()
+            .then(async (vehicule) => {
+                return res.render('../views/partials/body', {
+                    titre: 'Fiche Véhicule',
+                    page: 'vehicule',
+                    vehicule
+                })
+            })
+            .catch(async (error) => {
+                console.log(error);
                 return res.status(500).json({
                     status: 500,
                     message: "Internal Error while searching the vehicle",
-                    err
+                    err: error
                 });
-            }
-            UserModel.findById(vehicule.vendeur, (errUser, user) => {
-                if (errUser) {
-                    return res.status(500).json({
-                        status: 500,
-                        message: "Internal Error while searching the seller's information",
-                        err
-                    });
-                }
-                nomprenom = `${user.nom} ${user.prenom}`;
-            });
-            return res.render('../views/partials/body', {
-                titre: 'Fiche Véhicule',
-                page: 'vehicule',
-                nomprenom,
-                vehicule
             })
-        })
     },
 
     connexion: (req, res) => {
@@ -76,19 +92,20 @@ module.exports = {
         });
     },
 
-    seConnecter: (req, res) => {
-        const {identifiant, mdp} = req.body
+    seConnecter: async (req, res) => {
+        const { identifiant, mdp } = req.body
+        const identifiantParsed = parseInt(identifiant)
 
-        UserModel.findById(identifiant, (err, user) => {
-            if (err && err.name !== 'CastError') {
-                return res.status(500).json({
-                    err
-                });
-            }
+        async function connect() {
+            const user = await prisma.utilisateur.findUnique({
+                where: {
+                    id: identifiantParsed
+                }
+            });
 
             if (user && bcrypt.compareSync(mdp, user.mdp)) {
                 res.cookie('auth', {
-                    identifiant,
+                    identifiant: user.id,
                     nom: user.nom,
                     prenom: user.prenom,
                     ville: user.ville
@@ -98,7 +115,20 @@ module.exports = {
                 req.session.message = 'Authentification incorrect'
                 return res.redirect('back')
             }
-        })
+        }
+
+        connect()
+            .then(async () => {
+                await prisma.$disconnect()
+            })
+            .catch(async (error) => {
+                await prisma.$disconnect()
+                return res.status(500).json({
+                    status: 500,
+                    message: "Internal Error while attempting to connect",
+                    err: error
+                });
+            })
     },
 
     inscription: (req, res) => {
