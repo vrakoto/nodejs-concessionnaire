@@ -1,7 +1,12 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
 const pathBodyHTML = '../views/partials/body';
 const bcrypt = require('bcrypt');
+
+const { Sequelize } = require('sequelize');
+const Utilisateur = require('../models/Utilisateur');
+const sequelize = new Sequelize('conc', 'root', '', {
+    host: 'localhost',
+    dialect: 'mysql'
+});
 
 module.exports = {
     ajouterVehicule: (req, res) => {
@@ -138,34 +143,27 @@ module.exports = {
             return res.redirect('back')
         }
 
-        async function create() {
-            const salt = bcrypt.genSaltSync(10);
-            const hash = bcrypt.hashSync(mdp, salt);
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(mdp, salt);
 
-            await prisma.utilisateur.create({
-                data: {
-                    nom,
-                    prenom,
-                    ville,
-                    mdp: hash
-                },
+        sequelize.sync().then(() => {
+            Utilisateur.create({
+                nom,
+                prenom,
+                ville,
+                mdp: hash
             });
-        }
-
-        create()
-            .then(async () => {
-                await prisma.$disconnect()
-                req.session.message = "Inscription réussi, connectez-vous !"
-                return res.redirect('/connexion')
+        }).then(() => {
+            req.session.message = "Inscription réussi, connectez-vous !"
+            return res.redirect('/connexion')
+        })
+        .catch((error) => {
+            return res.status(500).json({
+                status: 500,
+                message: "Internal Error while creating the user",
+                err: error
             })
-            .catch(async (error) => {
-                await prisma.$disconnect()
-                return res.status(500).json({
-                    status: 500,
-                    message: "Internal Error while creating the user",
-                    err: error
-                })
-            })
+        })
     },
 
     deconnexion: (req, res) => {

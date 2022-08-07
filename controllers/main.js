@@ -1,7 +1,13 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
 const pathBodyHTML = '../views/partials/body';
 const bcrypt = require('bcrypt');
+const Utilisateur = require('../models/Utilisateur');
+const Vehicule = require('../models/Vehicule');
+
+const { Sequelize } = require('sequelize');
+const sequelize = new Sequelize('conc', 'root', '', {
+    host: 'localhost',
+    dialect: 'mysql'
+});
 
 module.exports = {
     home: (req, res) => {
@@ -11,7 +17,7 @@ module.exports = {
         });
     },
 
-    parcourir: (req, res) => {
+    parcourir: async (req, res) => {
         let titre = "Parcourir";
         const type = (req.params.type) ? req.params.type : "all";
         let s = {};
@@ -20,12 +26,13 @@ module.exports = {
             s = { where: { type: type } };
         }
 
-        async function getVehicules() {
-            const lesVehicules = await prisma.vehicule.findMany(s);
-            return lesVehicules;
-        }
+        /* sequelize.sync().then(() => {
+            return Vehicule.findAll()
+        }).then((data) => {
+            console.log(data);
+        }) */
 
-        getVehicules()
+        /* getVehicules()
             .then(async (lesVehicules) => {
                 await prisma.$disconnect()
                 return res.render(pathBodyHTML, {
@@ -42,7 +49,7 @@ module.exports = {
                     message: "Internal Error while searching the vehicles",
                     err: error
                 });
-            })
+            }) */
     },
 
     getVehicule: (req, res) => {
@@ -96,7 +103,26 @@ module.exports = {
         const { identifiant, mdp } = req.body
         const identifiantParsed = parseInt(identifiant)
 
-        async function connect() {
+        /* sequelize.sync().then(() => {
+            Utilisateur.create({
+                nom,
+                prenom,
+                ville,
+                mdp: hash
+            });
+        }).then(() => {
+            req.session.message = "Inscription réussi, connectez-vous !"
+            return res.redirect('/connexion')
+        })
+        .catch((error) => {
+            return res.status(500).json({
+                status: 500,
+                message: "Internal Error while creating the user",
+                err: error
+            })
+        }) */
+
+        /* async function connect() {
             const user = await prisma.utilisateur.findUnique({
                 where: {
                     id: identifiantParsed
@@ -128,7 +154,7 @@ module.exports = {
                     message: "Internal Error while attempting to connect",
                     err: error
                 });
-            })
+            }) */
     },
 
     inscription: (req, res) => {

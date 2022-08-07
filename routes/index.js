@@ -14,6 +14,6 @@ router.route('/connexion').post(mainController.seConnecter)
 router.route('/inscription').get(mainController.inscription)
 router.route('/inscription').post(userController.createUser)
 
-router.route('/vehicule/:id').get(mainController.getVehicule)
+// router.route('/vehicule/:id').get(mainController.getVehicule)
 
 module.exports = router;
