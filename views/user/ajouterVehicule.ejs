@@ -1,77 +1,91 @@
-<form method="post" action="/user/vehicule" class="reduceForm container border p-3 mt-5" id="formVehicule">
+<form method="post" action="/user/vehicule" class="reduceForm container border p-3 mt-5 dynamicErrors" id="formVehicule">
 
-    <div class="d-none alert" id="formVehiculeMessage"></div>
+    <% if (messageFormulaire !=='' ) { %>
+        <div class="alert alert-danger">
+            <h2 class="text-center">
+                <%= messageFormulaire.general %>
+            </h2>
+            <ul class="mt-3">
+                <% for (const erreur in messageFormulaire.erreurs) { %>
+                    <li class="mt-2">
+                        <%= messageFormulaire.erreurs[erreur] %>
+                    </li>
+                    <% } %>
+            </ul>
+        </div>
+        <% } %>
 
-    <div class="mb-3">
-        <label for="type" class="form-label">Sélectionner le type du véhicule correspondant</label>
-        <select class="form-select" id="type" name="type">
-            <option value="voiture" selected>Voiture</option>
-            <option value="moto">Moto</option>
-        </select>
-    </div>
+            <div class="mb-3">
+                <label for="type" class="form-label">Sélectionner le type du véhicule correspondant</label>
+                <select class="form-select" id="type" name="type">
+                    <option value="voiture" selected>Voiture</option>
+                    <option value="moto">Moto</option>
+                </select>
+            </div>
 
 
-    <div class="mb-3">
-        <label for="image" class="form-label">Image (URL)</label>
-        <input type="text" name="image" class="form-control" id="image" autofocus>
-    </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Image (URL)</label>
+                <input type="text" name="image" class="form-control" id="image" autofocus>
+            </div>
 
-    <div class="mb-3">
-        <label for="marque" class="form-label">Marque</label>
-        <input type="text" name="marque" class="form-control" id="marque">
-    </div>
+            <div class="mb-3">
+                <label for="marque" class="form-label">Marque</label>
+                <input type="text" name="marque" class="form-control" id="marque">
+            </div>
 
-    <div class="mb-3">
-        <label for="modele" class="form-label">Modèle</label>
-        <input type="text" name="modele" class="form-control" id="modele">
-    </div>
+            <div class="mb-3">
+                <label for="modele" class="form-label">Modèle</label>
+                <input type="text" name="modele" class="form-control" id="modele">
+            </div>
 
-    <div class="mb-3">
-        <label for="boite" class="form-label">Boite de transmission</label>
-        <select class="form-select" name="boite" id="boite">
-            <option value="automatique">Automatique</option>
-            <option value="manuelle">Manuelle</option>
-            <option value="sequentielle">Séquentielle</option>
-        </select>
-    </div>
+            <div class="mb-3">
+                <label for="boite" class="form-label">Boite de transmission</label>
+                <select class="form-select" name="boite" id="boite">
+                    <option value="automatique">Automatique</option>
+                    <option value="manuelle">Manuelle</option>
+                    <option value="sequentielle">Séquentielle</option>
+                </select>
+            </div>
 
-    <div class="mb-3">
-        <label for="energie" class="form-label">Energie</label>
-        <select class="form-select" name="energie" id="energie">
-            <option value="essence">Essence</option>
-            <option value="diesel">Diesel</option>
-            <option value="electrique">Electrique</option>
-            <option value="hybride">Hybride</option>
-        </select>
-    </div>
+            <div class="mb-3">
+                <label for="energie" class="form-label">Energie</label>
+                <select class="form-select" name="energie" id="energie">
+                    <option value="essence">Essence</option>
+                    <option value="diesel">Diesel</option>
+                    <option value="electrique">Electrique</option>
+                    <option value="hybride">Hybride</option>
+                </select>
+            </div>
 
-    <div class="mb-3">
-        <label for="annee" class="form-label">Année</label>
-        <select class="form-select" name="annee" id="annee">
-            <% for (let i = new Date().getFullYear(); i >= 1950; i--) { %>
-                <option value="<%= i %>"><%= i %></option>
-            <% } %>
-        </select>
-    </div>
+            <div class="mb-3">
+                <label for="annee" class="form-label">Année</label>
+                <select class="form-select" name="annee" id="annee">
+                    <% for (let i=new Date().getFullYear(); i>= 1950; i--) { %>
+                        <option value="<%= i %>">
+                            <%= i %>
+                        </option>
+                        <% } %>
+                </select>
+            </div>
 
-    <div class="mb-3">
-        <label for="km" class="form-label">KM</label>
-        <input type="number" name="km" class="form-control" id="km" step="1" min="0" max="1500000">
-    </div>
+            <div class="mb-3">
+                <label for="km" class="form-label">KM</label>
+                <input type="number" name="km" class="form-control" id="km" step="1" min="0" max="1500000">
+            </div>
 
-    <hr class="mt-5">
+            <hr class="mt-5">
 
-    <div class="form-floating mb-3">
-        <textarea class="form-control" placeholder="Laissez un commentaire" name="description" id="description"></textarea>
-        <label for="description" class="form-label">Description</label>
-    </div>
+            <div class="form-floating mb-3">
+                <textarea class="form-control" placeholder="Laissez un commentaire" name="description"
+                    id="description"></textarea>
+                <label for="description" class="form-label">Description</label>
+            </div>
 
-    <div class="mb-3">
-        <label for="prix" class="form-label">Prix</label>
-        <input type="number" name="prix" class="form-control" id="prix" step="1" min="0" max="30000000">
-    </div>
+            <div class="mb-3">
+                <label for="prix" class="form-label">Prix</label>
+                <input type="number" name="prix" class="form-control" id="prix" step="1" min="0" max="30000000">
+            </div>
 
-    <button type="submit" class="btn btn-success">Mettre en vente</button>
+            <button type="submit" class="btn btn-success">Mettre en vente</button>
 </form>
-
-<div class="d-none flex-wrap justify-content-around text-center mt-5" id="vehiculeRecentCreer"></div>

@@ -12,7 +12,7 @@
             <% } %>
 
                 <% lesVehicules.forEach(vehicule=> { %>
-                    <div class="cardVehicule card mx-3">
+                    <div class="cardVehicule card mt-3 mx-3">
                         <img src="<%= vehicule.image %>" width="240" height="160" class="card-img-top">
                         <div class="card-body text-center">
                             <h5 class="card-title ">
@@ -26,10 +26,9 @@
                             <a href="/vehicule/<%= vehicule.id %>" class="btn btn-primary"><i
                                     class="fa-solid fa-up-right-from-square"></i></a>
 
-                            <% if (auth && auth.identifiant==vehicule.vendeur) { %>
-                                <button class="btn btn-danger" onclick="supprimerVehicule('<%= vehicule.id %>')"><i
-                                        class="fa-solid fa-trash"></i></button>
-                                <% } %>
+                            <% if (auth && auth.identifiant == vehicule.UtilisateurId) { %>
+                                <a href="/user/supprimerVehicule/<%= vehicule.id %>" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a>
+                            <% } %>
                         </div>
                     </div>
                     <% }) %>

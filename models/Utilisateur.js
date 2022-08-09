@@ -1,14 +1,16 @@
-const { Sequelize, DataTypes, Model } = require('sequelize');
-const sequelize = new Sequelize('conc', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql'
-});
+const { DataTypes, Model } = require('sequelize');
+const {sequelize} = require('../db/config');
+const Vehicule = require('./Vehicule');
 
 class Utilisateur extends Model {}
 Utilisateur.init({
-    id: {
+    /* id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
+        primaryKey: true
+    }, */
+    identifiant: {
+        type: DataTypes.STRING(30),
         primaryKey: true
     },
     nom: {
@@ -40,5 +42,18 @@ Utilisateur.init({
         freezeTableName: true
     }
 )
+
+Utilisateur.hasMany(Vehicule);
+Vehicule.belongsTo(Utilisateur);
+
+/* async function generate() {
+    await sequelize.sync({force: true});
+}
+
+generate().then((e) => {
+    console.log(e);
+}).catch((err) => {
+    console.log("ERR: ", err);
+}) */
 
 module.exports = Utilisateur;

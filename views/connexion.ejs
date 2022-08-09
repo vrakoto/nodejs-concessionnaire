@@ -1,14 +1,14 @@
 <form method="post" action="/connexion" class="reduceForm container border p-3 mt-5">
 
-    <% if (typeof messageFormulaire !== 'undefined') { %>
+    <% if (messageFormulaire !== '') { %>
         <div class="alert alert-danger text-center">
-            <%= messageFormulaire %>
+            <%= messageFormulaire.message %>
         </div>
     <% } %>
 
     <div class="mb-3">
         <label for="identifiant" class="form-label">Identifiant</label>
-        <input type="number" class="form-control" name="identifiant" id="identifiant" autofocus>
+        <input type="text" class="form-control" name="identifiant" id="identifiant" autofocus>
     </div>
     <div class="mb-3">
         <label for="mdp" class="form-label">Mot de passe</label>

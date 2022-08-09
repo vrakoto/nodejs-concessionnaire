@@ -1,14 +1,24 @@
 <form method="post" action="/inscription" class="reduceForm container border p-3 mt-5">
 
-    <% if (typeof messageFormulaire !== 'undefined') { %>
+    <% if (messageFormulaire !== '') { %>
         <div class="alert alert-danger text-center">
-            <%= messageFormulaire %>
+            <h2><%= messageFormulaire.general %></h2>
+            <ul>
+                <% for (const erreur in messageFormulaire.erreurs) { %>
+                    <li><%= messageFormulaire.erreurs[erreur] %></li>
+                <% } %>
+            </ul>
         </div>
     <% } %>
 
     <div class="mb-3">
+        <label for="identifiant" class="form-label">Identifiant</label>
+        <input type="text" name="identifiant" class="form-control" id="identifiant" autofocus>
+    </div>
+
+    <div class="mb-3">
         <label for="nom" class="form-label">Nom</label>
-        <input type="text" name="nom" class="form-control" id="nom" autofocus>
+        <input type="text" name="nom" class="form-control" id="nom">
     </div>
 
     <div class="mb-3">

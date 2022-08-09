@@ -3,18 +3,58 @@ const bcrypt = require('bcrypt');
 const Utilisateur = require('../models/Utilisateur');
 const Vehicule = require('../models/Vehicule');
 
-const { Sequelize } = require('sequelize');
-const sequelize = new Sequelize('conc', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql'
-});
-
+var messageFormulaire = (typeof messageFormulaire !== 'undefined') ? messageFormulaire : ''
 module.exports = {
     home: (req, res) => {
         return res.render(pathBodyHTML, {
             page: "index",
             titre: " Accueil"
         });
+    },
+
+    connexion: (req, res) => {
+        return res.render(pathBodyHTML, {
+            page: "connexion",
+            titre: "Connexion",
+            messageFormulaire
+        });
+    },
+
+    seConnecter: (req, res) => {
+        const { identifiant, mdp } = req.body
+
+        async function validAuth() {
+            const utilisateur = await Utilisateur.findOne({
+                where: {
+                    identifiant
+                }
+            });
+
+            return (utilisateur) ? await bcrypt.compare(mdp, utilisateur.mdp) : false
+        }
+
+
+        validAuth().then((bool) => {
+            if (bool) {
+                res.cookie('auth', {
+                    identifiant
+                })
+                return res.redirect('/')
+            } else {
+                messageFormulaire = {
+                    type: 'error',
+                    message: 'Authentification incorrect'
+                }
+                return module.exports.connexion(req, res)
+            }
+        }).catch((error) => {
+            console.log(error);
+            return res.status(500).json({
+                status: 500,
+                message: "Internal Error while attempting to connect",
+                err: error
+            });
+        })
     },
 
     parcourir: async (req, res) => {
@@ -26,142 +66,132 @@ module.exports = {
             s = { where: { type: type } };
         }
 
-        /* sequelize.sync().then(() => {
-            return Vehicule.findAll()
-        }).then((data) => {
-            console.log(data);
-        }) */
+        async function getLesVehicules() {
+            const lesVehicules = await Vehicule.findAll(s)
+            return lesVehicules
+        }
 
-        /* getVehicules()
-            .then(async (lesVehicules) => {
-                await prisma.$disconnect()
-                return res.render(pathBodyHTML, {
-                    page: "parcourir",
-                    titre: titre,
-                    type: type,
-                    lesVehicules
-                });
-            })
-            .catch(async (error) => {
-                await prisma.$disconnect()
-                return res.status(500).json({
-                    status: 500,
-                    message: "Internal Error while searching the vehicles",
-                    err: error
-                });
-            }) */
+        getLesVehicules().then((data) => {
+            return res.render(pathBodyHTML, {
+                page: "parcourir",
+                titre: titre,
+                type: type,
+                lesVehicules: data
+            });
+        }).catch((error) => {
+            return res.status(500).json({
+                status: 500,
+                message: "Internal Error while searching the vehicles",
+                err: error
+            });
+        })
     },
 
     getVehicule: (req, res) => {
         const { id } = req.params;
-        let nomprenom = '';
 
         async function get() {
-            const vehicule = await prisma.vehicule.findUniqueOrThrow({
-                where: {
-                    id: parseInt(id)
-                },
+            const vehicule = await Vehicule.findByPk(parseInt(id), {
                 include: {
-                    vendeur: {
-                        select: {
-                            nom: true,
-                            prenom: true
-                        },
-                    },
-                },
+                    model: Utilisateur,
+                    attributes: ['identifiant', 'nom', 'prenom']
+                }
             })
             return vehicule
         }
 
         get()
-            .then(async (vehicule) => {
+            .then((vehicule) => {
+                console.log(vehicule);
                 return res.render('../views/partials/body', {
                     titre: 'Fiche Véhicule',
                     page: 'vehicule',
                     vehicule
                 })
             })
-            .catch(async (error) => {
+            .catch((error) => {
                 console.log(error);
                 return res.status(500).json({
                     status: 500,
-                    message: "Internal Error while searching the vehicle",
+                    message: "Internal Error while fetching the vehicle",
                     err: error
                 });
             })
-    },
-
-    connexion: (req, res) => {
-        return res.render(pathBodyHTML, {
-            page: "connexion",
-            titre: "Connexion",
-            messageFormulaire: req.session.message
-        });
-    },
-
-    seConnecter: async (req, res) => {
-        const { identifiant, mdp } = req.body
-        const identifiantParsed = parseInt(identifiant)
-
-        /* sequelize.sync().then(() => {
-            Utilisateur.create({
-                nom,
-                prenom,
-                ville,
-                mdp: hash
-            });
-        }).then(() => {
-            req.session.message = "Inscription réussi, connectez-vous !"
-            return res.redirect('/connexion')
-        })
-        .catch((error) => {
-            return res.status(500).json({
-                status: 500,
-                message: "Internal Error while creating the user",
-                err: error
-            })
-        }) */
-
-        /* async function connect() {
-            const user = await prisma.utilisateur.findUnique({
-                where: {
-                    id: identifiantParsed
-                }
-            });
-
-            if (user && bcrypt.compareSync(mdp, user.mdp)) {
-                res.cookie('auth', {
-                    identifiant: user.id,
-                    nom: user.nom,
-                    prenom: user.prenom,
-                    ville: user.ville
-                })
-                return res.redirect('/')
-            } else {
-                req.session.message = 'Authentification incorrect'
-                return res.redirect('back')
-            }
-        }
-
-        connect()
-            .then(async () => {
-                await prisma.$disconnect()
-            })
-            .catch(async (error) => {
-                await prisma.$disconnect()
-                return res.status(500).json({
-                    status: 500,
-                    message: "Internal Error while attempting to connect",
-                    err: error
-                });
-            }) */
     },
 
     inscription: (req, res) => {
         return res.render(pathBodyHTML, {
             page: "inscription",
             titre: "Inscription",
-            messageFormulaire: req.session.message
+            messageFormulaire
         });
+    },
+
+    createUser: (req, res) => {
+        const { identifiant, nom, prenom, ville, mdp, mdp_c } = req.body
+        let erreurs = {}
+
+        async function checkForms() {
+            const identifiantExists = await Utilisateur.findByPk(identifiant).then((data) => (data) ? true : false)
+
+            if (identifiant.length < 3) {
+                erreurs["identifiant"] = "L'identifiant est trop court"
+            } else if (identifiantExists) {
+                erreurs["identifiant"] = "Cet identifiant a déjà été prit"
+            }
+
+            if (nom.length < 2) {
+                erreurs["nom"] = 'Le nom est trop court'
+            }
+
+            if (prenom.length < 2) {
+                erreurs["prenom"] = 'Le prénom est trop court'
+            }
+
+            if (ville.length < 2) {
+                erreurs["ville"] = 'La ville est trop courte'
+            }
+
+            if (mdp.length < 3) {
+                erreurs["ville"] = 'Le mot de passe est trop court'
+            } else if (mdp !== mdp_c) {
+                erreurs['mdp'] = "Les mots de passe ne correspondent pas"
+            }
+
+            if (Object.entries(erreurs).length > 0) {
+                messageFormulaire = {
+                    general: "Formulaire invalide",
+                    erreurs
+                }
+                return erreurs
+            }
+        }
+
+        const hash = bcrypt.hashSync(mdp, bcrypt.genSaltSync(10));
+        async function create() {
+            await Utilisateur.create({
+                identifiant,
+                nom,
+                prenom,
+                ville,
+                mdp: hash
+            })
+        }
+
+        checkForms().then((metError) => {
+            if (metError) {
+                return module.exports.inscription(req, res)
+            }
+
+            create().then(() => {
+                return module.exports.connexion(req, res)
+            }).catch((error) => {
+                return res.status(500).json({
+                    status: 500,
+                    message: "Internal Error while creating the user",
+                    err: error
+                })
+            })
+        })
     },
 }

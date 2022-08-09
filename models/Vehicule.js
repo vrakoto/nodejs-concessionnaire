@@ -1,25 +1,22 @@
-const { Sequelize, DataTypes, Model } = require('sequelize');
-const sequelize = new Sequelize('conc', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql'
-});
+const { DataTypes, Model } = require('sequelize');
+const {sequelize} = require('../db/config');
 const Utilisateur = require('./Utilisateur')
 
 class Vehicule extends Model {}
 Vehicule.init({
     id: {
-        type: Sequelize.INTEGER,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    vendeur: {
+    /* vendeur: {
         type: DataTypes.INTEGER,
         references: {
             model: Utilisateur,
             key: 'id',
         },
         allowNull: false
-    },
+    }, */
     type: {
         type: DataTypes.STRING(15),
         allowNull: false

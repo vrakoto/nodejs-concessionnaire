@@ -11,8 +11,7 @@ function ensureAuthenticated(req, res, next) {
 
 router.get('/ajouter', ensureAuthenticated, userController.ajouterVehicule)
 router.post('/vehicule', ensureAuthenticated, userController.creerVehicule)
-router.post('/supprimerVehicule', ensureAuthenticated, userController.supprimerVehicule)
-
+router.get('/supprimerVehicule/:id', ensureAuthenticated, userController.supprimerVehicule)
 
 router.get('/deconnexion', ensureAuthenticated, userController.deconnexion)
 
