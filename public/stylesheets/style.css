@@ -3,7 +3,7 @@ label {
 }
 
 .reduceForm {
-  width: 500px;
+  max-width: 580px;
 }
 
 .reduceForm #description {

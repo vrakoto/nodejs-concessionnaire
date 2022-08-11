@@ -4,12 +4,58 @@
         <div class="card-body">
             <img src="https://picsum.photos/80" class="img-thumbnail">
             <div class="d-inline-block">
-                <a class=""><%= vehicule.Utilisateur.nom + ' ' + vehicule.Utilisateur.prenom %></a>
+                <a class="">
+                    <%= vehicule.Utilisateur.nom + ' ' + vehicule.Utilisateur.prenom %>
+                </a>
                 <br>
             </div>
             <hr>
-            <h2><%= vehicule.marque + ' ' + vehicule.modele %></h2>
-            <h4><%= vehicule.prix %></h4>
+            <h2>
+                <%= vehicule.marque + ' ' + vehicule.modele %>
+            </h2>
+
+            <div class="container mt-3 border">
+                <div class="d-flex justify-content-between align-items-center border-bottom">
+                    <p class="mb-2">Boite</p>
+                    <p class="mb-2">
+                        <%= vehicule.boite.toUpperCase() %>
+                    </p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center border-bottom">
+                    <p class="mb-2">Energie</p>
+                    <p class="mb-2">
+                        <%= vehicule.energie.toUpperCase() %>
+                    </p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center border-bottom">
+                    <p class="mb-2">Année</p>
+                    <p class="mb-2">
+                        <%= vehicule.annee %>
+                    </p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center border-bottom">
+                    <p class="mb-2">Kilométrage total</p>
+                    <p class="mb-2">
+                        <%= vehicule.km %>
+                    </p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center border-bottom">
+                    <p class="mb-2">Prix</p>
+                    <p class="mb-2">
+                        <%= vehicule.prix %> &euro;
+                    </p>
+                </div>
+
+            </div>
         </div>
     </div>
+</div>
+
+<div class="text-center mt-3">
+    <h3>Description</h3>
+    <p id="description"><%= vehicule.description %></p>
 </div>

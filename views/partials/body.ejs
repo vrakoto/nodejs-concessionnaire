@@ -44,14 +44,16 @@
                     <% } %>
                 </ul>
 
-                <form class="d-flex" role="search">
+                <div class="d-flex" role="search">
                     <% if (!auth) { %>
                         <a href="/connexion" class="btn btn-primary mx-2">Connexion</a>
                         <a href="/inscription" class="btn btn-secondary">Inscription</a>
                     <% } else { %>
-                        <a href="/user/deconnexion" class="btn btn-danger">Déconnexion</a>
+                        <form action="/user/deconnexion" method="post">
+							<button class="btn btn-danger logout" type="submit">Déconnexion</button>
+						</form>
                     <% } %>
-                </form>
+                </div>
 
             </div>
         </div>

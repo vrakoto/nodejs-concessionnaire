@@ -1,9 +1,11 @@
 const pathBodyHTML = '../views/partials/body';
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+
 const Utilisateur = require('../models/Utilisateur');
 const Vehicule = require('../models/Vehicule');
 
-var messageFormulaire = (typeof messageFormulaire !== 'undefined') ? messageFormulaire : ''
 module.exports = {
     home: (req, res) => {
         return res.render(pathBodyHTML, {
@@ -15,46 +17,16 @@ module.exports = {
     connexion: (req, res) => {
         return res.render(pathBodyHTML, {
             page: "connexion",
-            titre: "Connexion",
-            messageFormulaire
+            titre: "Connexion"
         });
     },
 
-    seConnecter: (req, res) => {
-        const { identifiant, mdp } = req.body
-
-        async function validAuth() {
-            const utilisateur = await Utilisateur.findOne({
-                where: {
-                    identifiant
-                }
-            });
-
-            return (utilisateur) ? await bcrypt.compare(mdp, utilisateur.mdp) : false
-        }
-
-
-        validAuth().then((bool) => {
-            if (bool) {
-                res.cookie('auth', {
-                    identifiant
-                })
-                return res.redirect('/')
-            } else {
-                messageFormulaire = {
-                    type: 'error',
-                    message: 'Authentification incorrect'
-                }
-                return module.exports.connexion(req, res)
-            }
-        }).catch((error) => {
-            console.log(error);
-            return res.status(500).json({
-                status: 500,
-                message: "Internal Error while attempting to connect",
-                err: error
-            });
-        })
+    seConnecter: (req, res, next) => {
+        passport.authenticate('local', {
+            successRedirect: '/',
+            failureRedirect: '/connexion',
+            failureFlash: {type: "error_msg", message: "Authentification incorrect"}
+        })(req, res, next);
     },
 
     parcourir: async (req, res) => {
@@ -79,11 +51,11 @@ module.exports = {
                 lesVehicules: data
             });
         }).catch((error) => {
-            return res.status(500).json({
-                status: 500,
-                message: "Internal Error while searching the vehicles",
-                err: error
-            });
+            req.flash(
+                'error_msg',
+                "Un problème interne a été rencontré lors de la tentative de récupération des véhicules"
+            )
+            return res.redirect('/parcourir')
         })
     },
 
@@ -102,7 +74,6 @@ module.exports = {
 
         get()
             .then((vehicule) => {
-                console.log(vehicule);
                 return res.render('../views/partials/body', {
                     titre: 'Fiche Véhicule',
                     page: 'vehicule',
@@ -110,61 +81,62 @@ module.exports = {
                 })
             })
             .catch((error) => {
-                console.log(error);
-                return res.status(500).json({
-                    status: 500,
-                    message: "Internal Error while fetching the vehicle",
-                    err: error
-                });
+                req.flash(
+                    'error_msg',
+                    "Un problème interne a été rencontré lors de la tentative de récupération du véhicule"
+                )
+                return res.redirect(`/vehicule/${id}`)
             })
     },
 
     inscription: (req, res) => {
         return res.render(pathBodyHTML, {
             page: "inscription",
-            titre: "Inscription",
-            messageFormulaire
+            titre: "Inscription"
         });
     },
 
     createUser: (req, res) => {
         const { identifiant, nom, prenom, ville, mdp, mdp_c } = req.body
-        let erreurs = {}
+        const fieldsValid = {} // on conserve les champs ayant une valeur correcte
+        let erreurs = []
 
         async function checkForms() {
             const identifiantExists = await Utilisateur.findByPk(identifiant).then((data) => (data) ? true : false)
 
             if (identifiant.length < 3) {
-                erreurs["identifiant"] = "L'identifiant est trop court"
+                erreurs.push({msg: "L'identifiant est trop court"})
             } else if (identifiantExists) {
-                erreurs["identifiant"] = "Cet identifiant a déjà été prit"
+                erreurs.push({msg: `L'identifiant "${identifiant}" a déjà été prit`})
+            } else {
+                fieldsValid['identifiant'] = identifiant
             }
 
             if (nom.length < 2) {
-                erreurs["nom"] = 'Le nom est trop court'
+                erreurs.push({msg: "Le nom est trop court"})
+            } else {
+                fieldsValid['nom'] = nom
             }
 
             if (prenom.length < 2) {
-                erreurs["prenom"] = 'Le prénom est trop court'
+                erreurs.push({msg: "Le prénom est trop court"})
+            } else {
+                fieldsValid['prenom'] = prenom
             }
 
             if (ville.length < 2) {
-                erreurs["ville"] = 'La ville est trop courte'
+                erreurs.push({msg: "La ville est trop courte"})
+            } else {
+                fieldsValid['ville'] = ville
             }
 
             if (mdp.length < 3) {
-                erreurs["ville"] = 'Le mot de passe est trop court'
+                erreurs.push({msg: "Le mot de passe est trop court"})
             } else if (mdp !== mdp_c) {
-                erreurs['mdp'] = "Les mots de passe ne correspondent pas"
-            }
+                erreurs.push({msg: "Les mots de passe ne correspondent pas"})
+            } // on ne conserve pas le mdp
 
-            if (Object.entries(erreurs).length > 0) {
-                messageFormulaire = {
-                    general: "Formulaire invalide",
-                    erreurs
-                }
-                return erreurs
-            }
+            return erreurs
         }
 
         const hash = bcrypt.hashSync(mdp, bcrypt.genSaltSync(10));
@@ -179,18 +151,31 @@ module.exports = {
         }
 
         checkForms().then((metError) => {
-            if (metError) {
-                return module.exports.inscription(req, res)
+            if (metError.length > 0) {
+                req.flash(
+                    'errors_form',
+                    metError
+                );
+                
+                req.flash(
+                    'keep_values',
+                    fieldsValid
+                );
+                return res.redirect('/inscription')
             }
 
             create().then(() => {
-                return module.exports.connexion(req, res)
+                req.flash(
+                    'success_msg',
+                    'Inscription réussie, connectez-vous !'
+                );
+                return res.redirect('/connexion')
             }).catch((error) => {
-                return res.status(500).json({
-                    status: 500,
-                    message: "Internal Error while creating the user",
-                    err: error
-                })
+                req.flash(
+                    'error_msg',
+                    "Un problème interne a été rencontré lors de votre inscription, aucun compte n'a été créé pour l'instant"
+                );
+                return res.redirect('/connexion')
             })
         })
     },

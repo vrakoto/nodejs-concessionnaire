@@ -1,34 +1,35 @@
 <form method="post" action="/inscription" class="reduceForm container border p-3 mt-5">
 
-    <% if (messageFormulaire !== '') { %>
-        <div class="alert alert-danger text-center">
-            <h2><%= messageFormulaire.general %></h2>
-            <ul>
-                <% for (const erreur in messageFormulaire.erreurs) { %>
-                    <li><%= messageFormulaire.erreurs[erreur] %></li>
-                <% } %>
-            </ul>
-        </div>
-    <% } %>
+    <%- include("./partials/message") %>
+
+    <% const fields = {}
+        if (keep_values !== '') {
+            keep_values.forEach(function(json) {
+                for (const [key, value] of Object.entries(json)) {
+                    fields[key] = value
+                }
+            })
+        }
+    %>
 
     <div class="mb-3">
         <label for="identifiant" class="form-label">Identifiant</label>
-        <input type="text" name="identifiant" class="form-control" id="identifiant" autofocus>
+        <input type="text" name="identifiant" class="form-control" id="identifiant" value="<%= (fields.identifiant) ? fields.identifiant : '' %>" autofocus>
     </div>
 
     <div class="mb-3">
         <label for="nom" class="form-label">Nom</label>
-        <input type="text" name="nom" class="form-control" id="nom">
+        <input type="text" name="nom" class="form-control" id="nom" value="<%= (fields.nom) ? fields.nom : '' %>">
     </div>
 
     <div class="mb-3">
         <label for="prenom" class="form-label">Prénom</label>
-        <input type="text" name="prenom" class="form-control" id="prenom">
+        <input type="text" name="prenom" class="form-control" id="prenom" value="<%= (fields.prenom) ? fields.prenom : '' %>">
     </div>
 
     <div class="mb-3">
         <label for="ville" class="form-label">Ville</label>
-        <input type="text" name="ville" class="form-control" id="ville">
+        <input type="text" name="ville" class="form-control" id="ville" value="<%= (fields.ville) ? fields.ville : '' %>">
     </div>
     
     <div class="mb-3">

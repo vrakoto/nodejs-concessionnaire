@@ -4,11 +4,6 @@ const Vehicule = require('./Vehicule');
 
 class Utilisateur extends Model {}
 Utilisateur.init({
-    /* id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
-        primaryKey: true
-    }, */
     identifiant: {
         type: DataTypes.STRING(30),
         primaryKey: true
@@ -46,14 +41,14 @@ Utilisateur.init({
 Utilisateur.hasMany(Vehicule);
 Vehicule.belongsTo(Utilisateur);
 
-/* async function generate() {
-    await sequelize.sync({force: true});
-}
+// async function generate() {
+//     await sequelize.sync({force: true});
+// }
 
-generate().then((e) => {
-    console.log(e);
-}).catch((err) => {
-    console.log("ERR: ", err);
-}) */
+// generate().then((e) => {
+//     console.log(e);
+// }).catch((err) => {
+//     console.log("ERR: ", err);
+// })
 
 module.exports = Utilisateur;

@@ -9,14 +9,6 @@ Vehicule.init({
         autoIncrement: true,
         primaryKey: true
     },
-    /* vendeur: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Utilisateur,
-            key: 'id',
-        },
-        allowNull: false
-    }, */
     type: {
         type: DataTypes.STRING(15),
         allowNull: false
@@ -51,7 +43,7 @@ Vehicule.init({
     },
     description: {
         type: DataTypes.STRING(1000),
-        allowNull: false
+        defaultValue: "Cette annonce ne contient aucune description."
     },
     prix: {
         type: DataTypes.DOUBLE,

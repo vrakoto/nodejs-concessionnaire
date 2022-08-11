@@ -1,18 +1,12 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const functions = require('../config/function');
+
 const userController = require('../controllers/user');
 
-function ensureAuthenticated(req, res, next) {
-  if (!req.cookies['auth']) {
-    return res.redirect('/connexion')
-  }
-  next()
-}
-
-router.get('/ajouter', ensureAuthenticated, userController.ajouterVehicule)
-router.post('/vehicule', ensureAuthenticated, userController.creerVehicule)
-router.get('/supprimerVehicule/:id', ensureAuthenticated, userController.supprimerVehicule)
-
-router.get('/deconnexion', ensureAuthenticated, userController.deconnexion)
+router.get('/ajouter', functions.ensureAuthenticated, userController.ajouterVehicule)
+router.post('/vehicule', functions.ensureAuthenticated, userController.creerVehicule)
+router.post('/supprimerVehicule/:id', functions.ensureAuthenticated, userController.supprimerVehicule)
+router.post('/deconnexion', functions.ensureAuthenticated, userController.deconnexion)
 
 module.exports = router;
