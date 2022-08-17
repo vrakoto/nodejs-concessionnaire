@@ -2,9 +2,15 @@
     
     <%- include("./partials/message") %>
 
-    <a href="/parcourir" class="btn btn-<%= (type === 'all') ? "primary" : "secondary" %>">Tous</a>
-    <a href="/parcourir/voiture" class="btn btn-<%= (type === 'voiture') ? "primary" : "secondary" %>">Voiture</a>
-    <a href="/parcourir/moto" class="btn btn-<%= (type === 'moto') ? "primary" : "secondary" %>">Moto</a>
+    <div class="searchBar">
+        <a href="/parcourir" class="btn btn-<%= (type === 'all') ? "primary" : "secondary" %>">Tous</a>
+        <a href="/parcourir/voiture" class="btn btn-<%= (type === 'voiture') ? "primary" : "secondary" %>">Voiture</a>
+        <a href="/parcourir/moto" class="btn btn-<%= (type === 'moto') ? "primary" : "secondary" %>">Moto</a>
+        <form action="/parcourir/<%= type %>" method="post">
+            <input type="text" class="form-control" name="recherche" id="recherche" placeholder="Rechercher <%= (type === 'all') ? 'un véhicule' : 'une ' + type %>...">
+        </form>
+        <button onclick="toggleSearchVehic(this)"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
 
     <div class="d-flex justify-content-center flex-wrap mt-5">
         <% lesVehicules.forEach(vehicule=> { %>

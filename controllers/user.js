@@ -65,7 +65,7 @@ module.exports = {
                     }
                 });
                 if (!validMarque) {
-                    erreurs.push({msg: `La marque "${marque}" est inexistante ou a été mal ortographié`})
+                    erreurs.push({msg: `La marque "${marque}" est soit inexistante, mal ortographié ou ne conceptionne pas de ${type}`})
                 } else {
                     fieldsValid['marque'] = marque 
                 }

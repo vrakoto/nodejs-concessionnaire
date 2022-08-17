@@ -1,3 +1,14 @@
+.theme {
+  background-color: #161a3a;
+}
+
+.toggleSearch {
+  display: inline-block !important;
+}
+.removeTypeSearch {
+  display: none;
+}
+
 label {
   margin-bottom: 0 !important;
 }
@@ -12,4 +23,16 @@ label {
 
 .cardVehicule {
   width: 15rem;
+}
+
+.searchBar form {
+  display: none;
+}
+
+.searchBar button {
+  border-radius: 50%;
+  background-color: #ff346d;
+  color: #FFF;
+  border: none;
+  padding: 10px;
 }

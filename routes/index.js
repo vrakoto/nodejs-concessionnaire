@@ -7,6 +7,7 @@ router.get('/', mainController.home)
 
 router.get('/parcourir', mainController.parcourir)
 router.get('/parcourir/:type', mainController.parcourir)
+router.post('/parcourir/:type', mainController.parcourir)
 
 router.get('/connexion', functions.forwardAccessWhileConnected, mainController.connexion)
 router.post('/connexion', functions.forwardAccessWhileConnected, mainController.seConnecter)

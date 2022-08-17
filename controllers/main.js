@@ -1,4 +1,5 @@
 const pathBodyHTML = '../views/partials/body';
+const { Op } = require('sequelize')
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -25,17 +26,41 @@ module.exports = {
         passport.authenticate('local', {
             successRedirect: '/',
             failureRedirect: '/connexion',
-            failureFlash: {type: "error_msg", message: "Authentification incorrect"}
+            failureFlash: { type: "error_msg", message: "Authentification incorrect" }
         })(req, res, next);
     },
 
     parcourir: async (req, res) => {
         let titre = "Parcourir";
         const type = (req.params.type) ? req.params.type : "all";
+        const { recherche } = req.body
+
         let s = {};
+        let f = {}
+
+        if (recherche) {
+            f = {
+                [Op.or]: [
+                    {
+                        marque: {
+                            [Op.like]: '%' + recherche + '%'
+                        },
+                    },
+                    {
+                        modele: {
+                            [Op.like]: '%' + recherche + '%'
+                        }
+                    }
+                ]
+            }
+        }
         if (type !== 'all') {
             titre = "Rechercher par " + type;
-            s = { where: { type: type } };
+            f.type = type
+        }
+
+        s = {
+            where: f
         }
 
         async function getLesVehicules() {
@@ -105,35 +130,35 @@ module.exports = {
             const identifiantExists = await Utilisateur.findByPk(identifiant).then((data) => (data) ? true : false)
 
             if (identifiant.length < 3) {
-                erreurs.push({msg: "L'identifiant est trop court"})
+                erreurs.push({ msg: "L'identifiant est trop court" })
             } else if (identifiantExists) {
-                erreurs.push({msg: `L'identifiant "${identifiant}" a déjà été prit`})
+                erreurs.push({ msg: `L'identifiant "${identifiant}" a déjà été prit` })
             } else {
                 fieldsValid['identifiant'] = identifiant
             }
 
             if (nom.length < 2) {
-                erreurs.push({msg: "Le nom est trop court"})
+                erreurs.push({ msg: "Le nom est trop court" })
             } else {
                 fieldsValid['nom'] = nom
             }
 
             if (prenom.length < 2) {
-                erreurs.push({msg: "Le prénom est trop court"})
+                erreurs.push({ msg: "Le prénom est trop court" })
             } else {
                 fieldsValid['prenom'] = prenom
             }
 
             if (ville.length < 2) {
-                erreurs.push({msg: "La ville est trop courte"})
+                erreurs.push({ msg: "La ville est trop courte" })
             } else {
                 fieldsValid['ville'] = ville
             }
 
             if (mdp.length < 3) {
-                erreurs.push({msg: "Le mot de passe est trop court"})
+                erreurs.push({ msg: "Le mot de passe est trop court" })
             } else if (mdp !== mdp_c) {
-                erreurs.push({msg: "Les mots de passe ne correspondent pas"})
+                erreurs.push({ msg: "Les mots de passe ne correspondent pas" })
             } // on ne conserve pas le mdp
 
             return erreurs
@@ -156,7 +181,7 @@ module.exports = {
                     'errors_form',
                     metError
                 );
-                
+
                 req.flash(
                     'keep_values',
                     fieldsValid
