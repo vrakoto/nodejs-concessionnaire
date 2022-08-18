@@ -9,6 +9,10 @@
   display: none;
 }
 
+.gras {
+  font-weight: bold
+}
+
 label {
   margin-bottom: 0 !important;
 }

@@ -1,0 +1,14 @@
+.iconUsersVehicule {
+    max-width: 615px;
+    max-height: 355px;
+    border-radius: 10px;
+}
+
+.vehicule-infos {
+    width: 525px;
+    height: 355px;
+}
+
+.cardVehicule:not(:last-child) {
+    margin-right: 30px;
+}

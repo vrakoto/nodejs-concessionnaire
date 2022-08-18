@@ -30,6 +30,11 @@ module.exports = {
         })(req, res, next);
     },
 
+    getLesVehicules: async (filtre = {}) => {
+        const lesVehicules = await Vehicule.findAll(filtre)
+        return lesVehicules
+    },
+
     parcourir: async (req, res) => {
         let titre = "Parcourir";
         const type = (req.params.type) ? req.params.type : "all";
@@ -63,17 +68,13 @@ module.exports = {
             where: f
         }
 
-        async function getLesVehicules() {
-            const lesVehicules = await Vehicule.findAll(s)
-            return lesVehicules
-        }
-
-        getLesVehicules().then((data) => {
+        const lesVehicules = module.exports.getLesVehicules(s)
+        lesVehicules.then((datas) => {
             return res.render(pathBodyHTML, {
                 page: "parcourir",
                 titre: titre,
                 type: type,
-                lesVehicules: data
+                lesVehicules: datas
             });
         }).catch((error) => {
             req.flash(
@@ -99,10 +100,42 @@ module.exports = {
 
         get()
             .then((vehicule) => {
-                return res.render('../views/partials/body', {
-                    titre: 'Fiche Véhicule',
-                    page: 'vehicule',
-                    vehicule
+                const vehiculeSimilaires = {
+                    where: {
+                        [Op.and]: [
+                            {
+                                marque: {
+                                    [Op.like]: '%' + vehicule.marque + '%'
+                                },
+                            },
+                            {
+                                modele: {
+                                    [Op.like]: '%' + vehicule.modele + '%'
+                                }
+                            }
+                        ],
+                        [Op.not]: [
+                            {
+                                id: vehicule.id
+                            }
+                        ]
+                    }
+                }
+                const getLesVehicules = module.exports.getLesVehicules(vehiculeSimilaires)
+                getLesVehicules.then((lesVehicules) => {
+                    return res.render('../views/partials/body', {
+                        titre: 'Fiche Véhicule',
+                        page: 'vehicule',
+                        vehicule,
+                        css: 'vehicule',
+                        lesVehicules
+                    })
+                }).catch((error) => {
+                    req.flash(
+                        'error_msg',
+                        "Un problème interne a été rencontré lors de la tentative de récupération des véhicules"
+                    )
+                    return res.redirect('/parcourir')
                 })
             })
             .catch((error) => {

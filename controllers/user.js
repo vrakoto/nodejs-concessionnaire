@@ -23,7 +23,7 @@ module.exports = {
             type,
             image,
             marque,
-            modele,
+            modele: modele.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, ''),
             energie,
             boite,
             annee,
@@ -96,7 +96,7 @@ module.exports = {
                 erreurs.push({msg: `L'année doit être comprit entre 1950 et ${currentYear}`})
             }
     
-            if (km > 0 && km < 5500000) {
+            if (km >= 0 && km < 5500000) {
                 fieldsValid['km'] = km 
             } else {
                 erreurs.push({msg: "Le kilométrage total doit être comprit entre 0 et 5.500.000"})

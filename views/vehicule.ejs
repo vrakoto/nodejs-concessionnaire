@@ -1,61 +1,88 @@
-<div class="d-flex justify-content-center mt-5">
-    <img src="<%= vehicule.image %>" class="img-fluid" height="500" width="500">
-    <div class="card">
-        <div class="card-body">
-            <img src="https://picsum.photos/80" class="img-thumbnail">
-            <div class="d-inline-block">
-                <a class="">
-                    <%= vehicule.Utilisateur.nom + ' ' + vehicule.Utilisateur.prenom %>
-                </a>
-                <br>
-            </div>
-            <hr>
-            <h2>
-                <%= vehicule.marque + ' ' + vehicule.modele %>
-            </h2>
+<div class="mt-5 container">
 
-            <div class="container mt-3 border">
-                <div class="d-flex justify-content-between align-items-center border-bottom">
-                    <p class="mb-2">Boite</p>
-                    <p class="mb-2">
+    <div class="d-flex flex-wrap justify-content-between">
+        <img class="iconUsersVehicule" src="<%= vehicule.image %>" class="img-fluid" height="500" width="500">
+
+        <div class="card vehicule-infos">
+            <div class="card-body">
+                <img src="https://picsum.photos/80" class="img-thumbnail">
+                <div class="d-inline-block">
+                    <a class="">
+                        <%= vehicule.Utilisateur.nom + ' ' + vehicule.Utilisateur.prenom %>
+                    </a>
+                    <br>
+                </div>
+
+                <hr class="mb-0">
+
+                <a href="/parcourir/<%= vehicule.type %>">TYPE: <%= vehicule.type.toUpperCase() %></a>
+
+                <h2 class="text-center">
+                    <%= vehicule.marque + ' ' + vehicule.modele %>
+                </h2>
+
+                <div class="infos mt-3 d-flex justify-content-between">
+                    <span class="info">
+                        <i class="fa-solid fa-gear"></i>
                         <%= vehicule.boite.toUpperCase() %>
-                    </p>
-                </div>
+                    </span>
 
-                <div class="d-flex justify-content-between align-items-center border-bottom">
-                    <p class="mb-2">Energie</p>
-                    <p class="mb-2">
+                    <span class="info">
+                        <i class="fa-solid fa-gas-pump"></i>
                         <%= vehicule.energie.toUpperCase() %>
-                    </p>
-                </div>
+                    </span>
 
-                <div class="d-flex justify-content-between align-items-center border-bottom">
-                    <p class="mb-2">Année</p>
-                    <p class="mb-2">
+                    <span class="info">
+                        <i class="fa-solid fa-calendar-days"></i>
                         <%= vehicule.annee %>
-                    </p>
+                    </span>
+
+                    <span class="info">
+                        <i class="fa-solid fa-globe"></i>
+                        <%= vehicule.km %> km
+                    </span>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center border-bottom">
-                    <p class="mb-2">Kilométrage total</p>
-                    <p class="mb-2">
-                        <%= vehicule.km %>
-                    </p>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center border-bottom">
-                    <p class="mb-2">Prix</p>
-                    <p class="mb-2">
-                        <%= vehicule.prix %> &euro;
-                    </p>
-                </div>
-
+                <h3 class="text-center mt-5 gras">
+                    <%= new Intl.NumberFormat(undefined, { style: 'currency' , currency: 'EUR' }).format(vehicule.prix) %>
+                </h3>
             </div>
         </div>
     </div>
-</div>
 
-<div class="text-center mt-3">
-    <h3>Description</h3>
-    <p id="description"><%= vehicule.description %></p>
+    <div class="mt-5 border rounded details">
+        <h3 class="gras">Description</h3>
+        <p id="description">
+            <%= vehicule.description %>
+        </p>
+    </div>
+
+    <div class="produitsSimilaires mt-5">
+        <h3 class="gras"><%= vehicule.type.charAt(0).toUpperCase() + vehicule.type.slice(1) + "(s)" %> similaires</h3>
+
+        <div class="d-flex flex-wrap">
+            <% lesVehicules.forEach(vehicule=> { %>
+                <div class="cardVehicule card mt-3">
+                    <img src="<%= vehicule.image %>" width="240" height="160" class="card-img-top">
+                    <div class="card-body text-center">
+                        <h5 class="card-title ">
+                            <%= vehicule.marque + ' ' + vehicule.modele %>
+                        </h5>
+                        <hr>
+                        <p class="card-text mb-0">Année: <%= vehicule.annee %></p>
+                        <p class="card-text mb-0">Kilométrage total: <%= vehicule.km %></p>
+                        <p class="card-text mt-0">Prix: <%= new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(vehicule.prix) %></p>
+                        <a href="/vehicule/<%= vehicule.id %>" class="btn btn-primary"><i
+                                class="fa-solid fa-up-right-from-square"></i></a>
+    
+                        <% if (auth && auth.identifiant === vehicule.UtilisateurIdentifiant) { %>
+                            <form class="d-inline-block" action="/user/supprimerVehicule/<%= vehicule.id %>" method="post">
+                                <button class="btn btn-danger" type="submit"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
 </div>
