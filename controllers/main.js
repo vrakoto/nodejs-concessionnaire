@@ -145,12 +145,12 @@ module.exports = {
                     return res.redirect('/parcourir')
                 })
             })
-            .catch((error) => {
-                req.flash(
-                    'error_msg',
-                    "Un problème interne a été rencontré lors de la tentative de récupération du véhicule"
-                )
-                return res.redirect(`/vehicule/${id}`)
+            .catch(() => {
+                return res.render('../views/partials/body', {
+                    titre: 'Véhicule Introuvable',
+                    page: 'errors/notFound',
+                    message: 'Ce véhicule est inexistant ou a été supprimé.'
+                }) 
             })
     },
 
@@ -184,11 +184,11 @@ module.exports = {
                 firstUpperCase
             })
         }).catch(() => {
-            req.flash(
-                'error_msg',
-                "Un problème interne a été rencontré lors de la récupération des informations de l'utilisateur"
-            )
-            // return res.redirect(`/utilisateur/${id}`)
+            return res.render('../views/partials/body', {
+                titre: 'Utilisateur introuvable',
+                page: 'errors/notFound',
+                message: "Cet utilisateur est inexistant ou a été supprimé."
+            })
         })
     },
 

@@ -55,12 +55,13 @@ app.use('/', indexRouter);
 app.use('/user', userRouter);
 
 // problème lorsqu'on enchaine les slashs
-/* app.get('*', (req, res, next) => {
-    return res.render(pathBodyHTML, {
-        page: "notFound",
-        titre: "404 Page Not Found"
+app.get('*', (req, res, next) => {
+    return res.render('../views/partials/body', {
+        titre: "404 Page Not Found",
+        page: "errors/notFound",
+        message: 'La page est introuvable.'
     });
-}) */
+})
 
 // error handler
 app.use(function (err, req, res, next) {
@@ -70,7 +71,7 @@ app.use(function (err, req, res, next) {
     
     // render the error page
     res.status(err.status || 500);
-    res.render('error');
+    res.render('errors/error');
 });
 
 module.exports = app;
