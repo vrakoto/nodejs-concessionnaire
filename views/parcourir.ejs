@@ -1,39 +1,9 @@
 <div class="text-center mt-5">
-    
     <%- include("./partials/message") %>
 
-    <div class="searchBar">
-        <a href="/parcourir" class="btn btn-<%= (type === 'all') ? "primary" : "secondary" %>">Tous</a>
-        <a href="/parcourir/voiture" class="btn btn-<%= (type === 'voiture') ? "primary" : "secondary" %>">Voiture</a>
-        <a href="/parcourir/moto" class="btn btn-<%= (type === 'moto') ? "primary" : "secondary" %>">Moto</a>
-        <form action="/parcourir/<%= type %>" method="post">
-            <input type="text" class="form-control" name="recherche" id="recherche" placeholder="Rechercher <%= (type === 'all') ? 'un véhicule' : 'une ' + type %>...">
-        </form>
-        <button onclick="toggleSearchVehic(this)"><i class="fa-solid fa-magnifying-glass"></i></button>
-    </div>
+    <%- include("../components/searchVehicule") %>
 
     <div class="d-flex justify-content-center flex-wrap mt-5">
-        <% lesVehicules.forEach(vehicule=> { %>
-            <div class="cardVehicule card mt-3 mx-3">
-                <img src="<%= vehicule.image %>" width="240" height="160" class="card-img-top">
-                <div class="card-body text-center">
-                    <h5 class="card-title ">
-                        <%= vehicule.marque + ' ' + vehicule.modele %>
-                    </h5>
-                    <hr>
-                    <p class="card-text mb-0">Année: <%= vehicule.annee %></p>
-                    <p class="card-text mb-0">Kilométrage total: <%= vehicule.km %></p>
-                    <p class="card-text mt-0">Prix: <%= new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(vehicule.prix) %></p>
-                    <a href="/vehicule/<%= vehicule.id %>" class="btn btn-primary"><i
-                            class="fa-solid fa-up-right-from-square"></i></a>
-
-                    <% if (auth && auth.identifiant === vehicule.UtilisateurIdentifiant) { %>
-                        <form class="d-inline-block" action="/user/supprimerVehicule/<%= vehicule.id %>" method="post">
-                            <button class="btn btn-danger" type="submit"><i class="fa-solid fa-trash"></i></button>
-                        </form>
-                    <% } %>
-                </div>
-            </div>
-        <% }) %>
+        <%- include("../components/cardVehicule") %>
     </div>
 </div>

@@ -1,0 +1,26 @@
+<% lesVehicules.forEach(vehicule=> { %>
+    <div class="cardVehicule card mt-3 mx-3">
+        <img src="<%= vehicule.image %>" width="240" height="160" class="card-img-top">
+        <div class="card-body text-center">
+            <h5 class="card-title ">
+                <%= vehicule.marque + ' ' + vehicule.modele %>
+            </h5>
+            <hr>
+            <p class="card-text mb-0">Année: <%= vehicule.annee %>
+            </p>
+            <p class="card-text mb-0">Kilométrage total: <%= vehicule.km %>
+            </p>
+            <p class="card-text mt-0">Prix: <%= new Intl.NumberFormat(undefined, { style: 'currency' ,
+                    currency: 'EUR' }).format(vehicule.prix) %>
+            </p>
+            <a href="/vehicule/<%= vehicule.id %>" class="btn btn-primary"><i
+                    class="fa-solid fa-up-right-from-square"></i></a>
+
+            <% if (auth && auth.identifiant===vehicule.UtilisateurIdentifiant) { %>
+                <form class="d-inline-block" action="/user/supprimerVehicule/<%= vehicule.id %>" method="post">
+                    <button class="btn btn-danger" type="submit"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            <% } %>
+        </div>
+    </div>
+<% }) %>

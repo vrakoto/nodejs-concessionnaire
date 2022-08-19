@@ -53,6 +53,7 @@
                         <a href="/connexion" class="btn btn-primary mx-2">Connexion</a>
                         <a href="/inscription" class="btn btn-secondary">Inscription</a>
                     <% } else { %>
+                        <a href="/utilisateur/<%= auth.identifiant %>" class="btn btn-secondary mx-2">Mon profil</a>
                         <form action="/user/deconnexion" method="post">
 							<button class="btn btn-danger logout" type="submit">Déconnexion</button>
 						</form>

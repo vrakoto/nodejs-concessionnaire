@@ -6,6 +6,8 @@ const LocalStrategy = require('passport-local');
 
 const Utilisateur = require('../models/Utilisateur');
 const Vehicule = require('../models/Vehicule');
+const sequelize = require('sequelize');
+const firstUpperCase = require('../public/javascripts/helper').firstUpperCase;
 
 module.exports = {
     home: (req, res) => {
@@ -90,6 +92,10 @@ module.exports = {
 
         async function get() {
             const vehicule = await Vehicule.findByPk(parseInt(id), {
+                attributes: [
+                    'id', 'type', 'image', 'marque', 'modele', 'energie', 'boite', 'annee', 'km', 'description', 'prix',
+                    [sequelize.fn('date_format', sequelize.col('publication'), '%d/%m/%Y'), 'publication']
+                ],
                 include: {
                     model: Utilisateur,
                     attributes: ['identifiant', 'nom', 'prenom']
@@ -128,7 +134,8 @@ module.exports = {
                         page: 'vehicule',
                         vehicule,
                         css: 'vehicule',
-                        lesVehicules
+                        lesVehicules,
+                        firstUpperCase
                     })
                 }).catch((error) => {
                     req.flash(
@@ -145,6 +152,44 @@ module.exports = {
                 )
                 return res.redirect(`/vehicule/${id}`)
             })
+    },
+
+
+    getUtilisateur: async (req, res) => {
+        const { id } = req.params;
+
+        await Utilisateur.findByPk(id, {
+            attributes: [
+                'nom', 'prenom', 'ville',
+                [sequelize.fn('date_format', sequelize.col('date_creation'), '%d/%m/%Y'), 'date_creation'],
+            ],
+            include: {
+                model: Vehicule,
+            },
+            order: [
+                [ Vehicule, 'id', 'DESC']
+            ]
+        }).then((datas) => {
+            return res.render('../views/partials/body', {
+                titre: `Profil de ${id}`,
+                page: 'utilisateur',
+                utilisateur: {
+                    nom: datas.nom,
+                    prenom: datas.prenom,
+                    ville: datas.ville,
+                    date_creation: datas.date_creation,
+                },
+                lesVehicules: datas.Vehicules,
+                css: 'utilisateur',
+                firstUpperCase
+            })
+        }).catch(() => {
+            req.flash(
+                'error_msg',
+                "Un problème interne a été rencontré lors de la récupération des informations de l'utilisateur"
+            )
+            // return res.redirect(`/utilisateur/${id}`)
+        })
     },
 
     inscription: (req, res) => {

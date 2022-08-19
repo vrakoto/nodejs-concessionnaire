@@ -1,0 +1,25 @@
+.profil-utilisateur {
+    height: 500px;
+}
+
+.profil-infos-utilisateur {
+    width: 330px;
+}
+
+.profil-sesVehicules {
+    max-width: 700px;
+    height: 100%;
+}
+  
+.profil-sesVehicules-header {
+    background-color: #212529;
+    padding: 10px;
+    color: #FFF;
+    letter-spacing: 1px;
+    margin-bottom: 0;
+}
+
+.profil-sesVehicules-content {
+    height: 100%;
+    overflow-y: auto;
+}

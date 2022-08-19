@@ -16,5 +16,6 @@ router.get('/inscription', functions.forwardAccessWhileConnected, mainController
 router.post('/inscription', functions.forwardAccessWhileConnected, mainController.createUser)
 
 router.get('/vehicule/:id', mainController.getVehicule)
+router.get('/utilisateur/:id', mainController.getUtilisateur)
 
 module.exports = router;

@@ -6,22 +6,21 @@
         <div class="card vehicule-infos">
             <div class="card-body">
                 <img src="https://picsum.photos/80" class="img-thumbnail">
-                <div class="d-inline-block">
-                    <a class="">
-                        <%= vehicule.Utilisateur.nom + ' ' + vehicule.Utilisateur.prenom %>
-                    </a>
-                    <br>
-                </div>
+
+                <a class="d-inline-block" href="/utilisateur/<%= vehicule.Utilisateur.identifiant %> "><%= vehicule.Utilisateur.nom + ' ' + vehicule.Utilisateur.prenom %></a>
 
                 <hr class="mb-0">
 
-                <a href="/parcourir/<%= vehicule.type %>">TYPE: <%= vehicule.type.toUpperCase() %></a>
+                <div class="d-flex flex-row justify-content-between align-items-center">
+                    <a href="/parcourir/<%= vehicule.type %>">TYPE: <%= vehicule.type.toUpperCase() %></a>
+                    <i>Mise en ligne le : <a href=""><%= vehicule.publication %></a></i>
+                </div>
 
-                <h2 class="text-center">
-                    <%= vehicule.marque + ' ' + vehicule.modele %>
+                <h2 class="text-center mt-3">
+                    <%= vehicule.marque.toUpperCase() + ' ' + vehicule.modele.toUpperCase() %>
                 </h2>
 
-                <div class="infos mt-3 d-flex justify-content-between">
+                <div class="infos border mt-3 d-flex justify-content-between">
                     <span class="info">
                         <i class="fa-solid fa-gear"></i>
                         <%= vehicule.boite.toUpperCase() %>
@@ -43,7 +42,7 @@
                     </span>
                 </div>
 
-                <h3 class="text-center mt-5 gras">
+                <h3 class="text-center mt-4 gras">
                     <%= new Intl.NumberFormat(undefined, { style: 'currency' , currency: 'EUR' }).format(vehicule.prix) %>
                 </h3>
             </div>
@@ -52,37 +51,14 @@
 
     <div class="mt-5 border rounded details">
         <h3 class="gras">Description</h3>
-        <p id="description">
-            <%= vehicule.description %>
-        </p>
+        <div id="description"><%= (vehicule.description.trim() === '') ? '<i>Cette annonce ne contient aucune description.<i>' : vehicule.description %></div>
     </div>
 
     <div class="produitsSimilaires mt-5">
-        <h3 class="gras"><%= vehicule.type.charAt(0).toUpperCase() + vehicule.type.slice(1) + "(s)" %> similaires</h3>
+        <h3 class="gras"><%= firstUpperCase(vehicule.type) + '(s)' %> similaires</h3>
 
         <div class="d-flex flex-wrap">
-            <% lesVehicules.forEach(vehicule=> { %>
-                <div class="cardVehicule card mt-3">
-                    <img src="<%= vehicule.image %>" width="240" height="160" class="card-img-top">
-                    <div class="card-body text-center">
-                        <h5 class="card-title ">
-                            <%= vehicule.marque + ' ' + vehicule.modele %>
-                        </h5>
-                        <hr>
-                        <p class="card-text mb-0">Année: <%= vehicule.annee %></p>
-                        <p class="card-text mb-0">Kilométrage total: <%= vehicule.km %></p>
-                        <p class="card-text mt-0">Prix: <%= new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(vehicule.prix) %></p>
-                        <a href="/vehicule/<%= vehicule.id %>" class="btn btn-primary"><i
-                                class="fa-solid fa-up-right-from-square"></i></a>
-    
-                        <% if (auth && auth.identifiant === vehicule.UtilisateurIdentifiant) { %>
-                            <form class="d-inline-block" action="/user/supprimerVehicule/<%= vehicule.id %>" method="post">
-                                <button class="btn btn-danger" type="submit"><i class="fa-solid fa-trash"></i></button>
-                            </form>
-                        <% } %>
-                    </div>
-                </div>
-            <% }) %>
+            <%- include("../components/cardVehicule") %>
         </div>
     </div>
 </div>
