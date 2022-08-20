@@ -8,16 +8,19 @@ function nl2br (str, is_xhtml) {
     return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 }
 
-function toggleSearchVehic (e) {
+function toggleFilterVehic (e) {
     const currentBtn = $(e)
-    const formSearch = $('form')
-    $('form').toggleClass('toggleSearch')
-    $('.searchBar a').toggleClass('removeTypeSearch')
-    $('#recherche').focus()
+    const filterSearch = $('#filterSearch')
+    filterSearch.toggleClass('toggleFilter')
+    $('#filterSearch').children().first().focus()
 
-    if (formSearch.hasClass('toggleSearch')) {
+    if (filterSearch.hasClass('toggleFilter')) {
         currentBtn.find('i').replaceWith('<i class="fa-solid fa-xmark"></i>')
     } else {
-        currentBtn.find('i').replaceWith('<i class="fa-solid fa-magnifying-glass"></i>')
+        currentBtn.find('i').replaceWith('<i class="fa-solid fa-filter"></i>')
     }
+}
+
+function resetForm() {
+    $(':input').not(':button, :submit, :reset, :hidden').removeAttr('checked').removeAttr('selected').not(':checkbox, :radio, select').val('');
 }

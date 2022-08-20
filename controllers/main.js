@@ -8,6 +8,7 @@ const Utilisateur = require('../models/Utilisateur');
 const Vehicule = require('../models/Vehicule');
 const sequelize = require('sequelize');
 const firstUpperCase = require('../public/javascripts/helper').firstUpperCase;
+const filterInput = require('../public/javascripts/helper').filterInput;
 
 module.exports = {
     home: (req, res) => {
@@ -38,29 +39,69 @@ module.exports = {
     },
 
     parcourir: async (req, res) => {
-        let titre = "Parcourir";
-        const type = (req.params.type) ? req.params.type : "all";
-        const { recherche } = req.body
+        let titre = "Parcourir"
+        const type = (req.params.type) ? req.params.type : "all"
+        const stringValues = { marque, modele } = req.body
+        const intValues = {annee, kmMin, kmMax, prixMin, prixMax} = req.body
+        const formValues = Object.assign(stringValues, intValues);
 
-        let s = {};
+        let s = {}
         let f = {}
+        let isSubmit = false
 
-        if (recherche) {
-            f = {
-                [Op.or]: [
-                    {
-                        marque: {
-                            [Op.like]: '%' + recherche + '%'
-                        },
-                    },
-                    {
-                        modele: {
-                            [Op.like]: '%' + recherche + '%'
-                        }
-                    }
-                ]
+        if (stringValues.marque) {
+            f.marque = {
+                [Op.like]: '%' + marque + '%'
             }
+            isSubmit = true
         }
+        if (stringValues.modele) {
+            f.modele = {
+                [Op.like]: '%' + modele + '%'
+            }
+            isSubmit = true
+        }
+
+        if (intValues.annee) {
+            f.annee = parseInt(annee)
+            isSubmit = true
+        }
+
+
+        if (intValues.kmMin && intValues.kmMax) {
+            f.km = {
+                [Op.between]: [parseInt(kmMin), parseInt(kmMax)]
+            }
+            isSubmit = true
+        } else if (intValues.kmMin) {
+            f.km = {
+                [Op.gte]: parseInt(kmMin)
+            }
+            isSubmit = true
+        } else if (intValues.kmMax) {
+            f.km = {
+                [Op.lte]: parseInt(kmMax)
+            }
+            isSubmit = true
+        }
+
+        if (intValues.prixMin && intValues.prixMax) {
+            f.prix = {
+                [Op.between]: [parseFloat(prixMin), parseFloat(prixMax)]
+            }
+            isSubmit = true
+        } else if (intValues.prixMin) {
+            f.prix = {
+                [Op.gte]: parseFloat(prixMin)
+            }
+            isSubmit = true
+        } else if (intValues.prixMax) {
+            f.prix = {
+                [Op.lte]: parseFloat(prixMax)
+            }
+            isSubmit = true
+        }
+
         if (type !== 'all') {
             titre = "Rechercher par " + type;
             f.type = type
@@ -70,88 +111,64 @@ module.exports = {
             where: f
         }
 
-        const lesVehicules = module.exports.getLesVehicules(s)
-        lesVehicules.then((datas) => {
+        module.exports.getLesVehicules(s).then((lesVehicules) => {
             return res.render(pathBodyHTML, {
                 page: "parcourir",
                 titre: titre,
                 type: type,
-                lesVehicules: datas
+                lesVehicules,
+                filterValues: formValues,
+                isSubmit
             });
-        }).catch((error) => {
-            req.flash(
-                'error_msg',
-                "Un problème interne a été rencontré lors de la tentative de récupération des véhicules"
-            )
-            return res.redirect('/parcourir')
+        }).catch(() => {
+            return res.render('../views/partials/body', {
+                titre: 'Erreur 505',
+                page: 'errors/notFound',
+                message: 'Un problème interne a été rencontré lors de la tentative de récupération des véhicules.'
+            })
         })
     },
 
-    getVehicule: (req, res) => {
+    getVehicule: async (req, res) => {
         const { id } = req.params;
 
-        async function get() {
-            const vehicule = await Vehicule.findByPk(parseInt(id), {
-                attributes: [
-                    'id', 'type', 'image', 'marque', 'modele', 'energie', 'boite', 'annee', 'km', 'description', 'prix',
-                    [sequelize.fn('date_format', sequelize.col('publication'), '%d/%m/%Y'), 'publication']
-                ],
-                include: {
-                    model: Utilisateur,
-                    attributes: ['identifiant', 'nom', 'prenom']
+        await Vehicule.findByPk(parseInt(id), {
+            attributes: [
+                'id', 'type', 'image', 'marque', 'modele', 'energie', 'boite', 'annee', 'km', 'description', 'prix',
+                [sequelize.fn('date_format', sequelize.col('publication'), '%d/%m/%Y'), 'publication']
+            ],
+            include: {
+                model: Utilisateur,
+                attributes: ['identifiant', 'nom', 'prenom']
+            }
+        }).then((vehicule) => {
+            const vehiculeSimilaires = {
+                where: {
+                    [Op.and]: [
+                        { marque: { [Op.like]: '%' + vehicule.marque + '%' } },
+                        { modele: { [Op.like]: '%' + vehicule.modele + '%' } }
+                    ],
+                    [Op.not]: [ { id: vehicule.id } ]
                 }
-            })
-            return vehicule
-        }
+            }
 
-        get()
-            .then((vehicule) => {
-                const vehiculeSimilaires = {
-                    where: {
-                        [Op.and]: [
-                            {
-                                marque: {
-                                    [Op.like]: '%' + vehicule.marque + '%'
-                                },
-                            },
-                            {
-                                modele: {
-                                    [Op.like]: '%' + vehicule.modele + '%'
-                                }
-                            }
-                        ],
-                        [Op.not]: [
-                            {
-                                id: vehicule.id
-                            }
-                        ]
-                    }
-                }
-                const getLesVehicules = module.exports.getLesVehicules(vehiculeSimilaires)
-                getLesVehicules.then((lesVehicules) => {
-                    return res.render('../views/partials/body', {
-                        titre: 'Fiche Véhicule',
-                        page: 'vehicule',
-                        vehicule,
-                        css: 'vehicule',
-                        lesVehicules,
-                        firstUpperCase
-                    })
-                }).catch((error) => {
-                    req.flash(
-                        'error_msg',
-                        "Un problème interne a été rencontré lors de la tentative de récupération des véhicules"
-                    )
-                    return res.redirect('/parcourir')
+            module.exports.getLesVehicules(vehiculeSimilaires).then((lesVehicules) => {
+                return res.render('../views/partials/body', {
+                    titre: 'Fiche Véhicule',
+                    page: 'vehicule',
+                    vehicule,
+                    css: 'vehicule',
+                    lesVehicules,
+                    firstUpperCase
                 })
             })
-            .catch(() => {
-                return res.render('../views/partials/body', {
-                    titre: 'Véhicule Introuvable',
-                    page: 'errors/notFound',
-                    message: 'Ce véhicule est inexistant ou a été supprimé.'
-                }) 
+        }).catch(() => {
+            return res.render('../views/partials/body', {
+                titre: 'Véhicule Introuvable',
+                page: 'errors/notFound',
+                message: 'Ce véhicule est inexistant ou a été supprimé.'
             })
+        })
     },
 
 

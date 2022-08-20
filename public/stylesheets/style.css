@@ -1,42 +1,39 @@
 .theme {
-  background-color: #161a3a;
+    background-color: #161a3a;
 }
 
-.toggleSearch {
-  display: inline-block !important;
-}
-.removeTypeSearch {
-  display: none;
+.toggleFilter {
+    display: block !important;
 }
 
 .gras {
-  font-weight: bold
+    font-weight: bold
 }
 
 label {
-  margin-bottom: 0 !important;
+    margin-bottom: 0 !important;
 }
 
 .reduceForm {
-  max-width: 580px;
+    max-width: 580px;
 }
 
 .reduceForm #description {
-  height: 200px;
+    height: 200px;
 }
 
 .cardVehicule {
-  width: 15rem;
+    width: 15rem;
 }
 
-.searchBar form {
-  display: none;
-}
 
-.searchBar button {
-  border-radius: 50%;
-  background-color: #ff346d;
-  color: #FFF;
-  border: none;
-  padding: 10px;
+.searchBar {
+    width: 400px;
+    margin: auto;
+}
+.searchBar .btnSearchFilter {
+    width: 100%;
+}
+#filterSearch label {
+    text-align: left;
 }

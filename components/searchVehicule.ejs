@@ -1,9 +1,53 @@
 <div class="searchBar">
-    <a href="/parcourir" class="btn btn-<%= (type === 'all') ? "primary" : "secondary" %>">Tous</a>
-    <a href="/parcourir/voiture" class="btn btn-<%= (type === 'voiture') ? "primary" : "secondary" %>">Voiture</a>
-    <a href="/parcourir/moto" class="btn btn-<%= (type === 'moto') ? "primary" : "secondary" %>">Moto</a>
-    <form action="/parcourir/<%= type %>" method="post">
-        <input type="text" class="form-control" name="recherche" id="recherche" placeholder="Rechercher <%= (type === 'all') ? 'un véhicule' : 'une ' + type %>...">
+    <div>
+        <a href="/parcourir" class="btn btn-<%= (type === 'all') ? "primary" : "secondary" %>">Tous</a>
+        <a href="/parcourir/voiture" class="btn btn-<%= (type === 'voiture') ? "primary" : "secondary" %>">Voiture</a>
+        <a href="/parcourir/moto" class="btn btn-<%= (type === 'moto') ? "primary" : "secondary" %>">Moto</a>
+    </div>
+
+    <button class="btn btn-primary mt-2 btnSearchFilter" onclick="toggleFilterVehic(this)"><i class="fa-solid fa-filter"></i></button>
+
+    <form class="d-none mt-3" id="filterSearch" action="/parcourir/<%= type %>" method="post">
+        <div class="mt-3">
+            <label for="marque" class="d-block form-label">Marque</label>
+            <input type="text" id="marque" class="form-control" name="marque" placeholder="(Falcultatif) Filtrer par marque" value="<%= (filterValues.marque) ? filterValues.marque : '' %>">
+        </div>
+
+        <div class="mt-3">
+            <label for="modele" class="d-block form-label">Modèle</label>
+            <input type="text" id="modele" class="form-control" name="modele" placeholder="(Falcultatif) Filtrer par modele" value="<%= (filterValues.modele) ? filterValues.modele : '' %>">
+        </div>
+
+        <div class="mt-3">
+            <label for="annee" class="d-block form-label">Année</label>
+            <input type="number" class="form-control" step="1" min="1950" max="<%= new Date().getFullYear() %>" name="annee" placeholder="(Falcultatif) Filtrer par une année" value="<%= (filterValues.annee) ? filterValues.annee : '' %>">
+        </div>
+
+        <div class="d-flex mt-3">
+            <div>
+                <label for="kmMin" class="d-block form-label">Km Min</label>
+                <input type="number" id="kmMin" class="form-control" step="1" min="0" max="5500000" name="kmMin" placeholder="KM minimum" value="<%= (filterValues.kmMin) ? filterValues.kmMin : '' %>">
+            </div>
+
+            <div>
+                <label for="kmMax" class="d-block form-label">Km Max</label>
+                <input type="number" id="kmMax" class="form-control" step="1" min="0" max="5500000" name="kmMax" placeholder="KM maximum" value="<%= (filterValues.kmMax) ? filterValues.kmMax : '' %>">
+            </div>
+        </div>
+
+        <div class="d-flex mt-3">
+            <div>
+                <label for="prixMin" class="d-block form-label">Prix Min</label>
+                <input type="number" id="prixMin" class="form-control" name="prixMin" step="1" min="0" max="30000000" placeholder="Prix min" value="<%= (filterValues.prixMin) ? filterValues.prixMin : '' %>">
+            </div>
+
+            <div>
+                <label for="prixMax" class="d-block form-label">Prix Max</label>
+                <input type="number" id="prixMax" class="form-control" name="prixMax" step="1" min="0" max="30000000" placeholder="Prix maximum" value="<%= (filterValues.prixMax) ? filterValues.prixMax : '' %>">
+            </div>
+        </div>
+
+        <button class="d-block w-100 btn btn-success mt-3" type="submit"><i class="fa-solid fa-filter"></i> Filtrer</button>
+        <span class="d-block w-100 btn btn-danger mt-1" onclick="resetForm()"><i class="fa-solid fa-filter-circle-xmark"></i> Effacer le filtre</span>
     </form>
-    <button onclick="toggleSearchVehic(this)"><i class="fa-solid fa-magnifying-glass"></i></button>
 </div>

@@ -30,6 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/iconTab', express.static(path.join(__dirname, 'public/images')))
 app.use('/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')))
 app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')))
 app.use('/jsBootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')))
