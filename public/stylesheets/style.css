@@ -5,6 +5,9 @@
 .toggleFilter {
     display: block !important;
 }
+.toggleOrderByMenu {
+    display: flex !important;
+}
 
 .gras {
     font-weight: bold
@@ -36,4 +39,20 @@ label {
 }
 #filterSearch label {
     text-align: left;
+}
+
+
+.dropdownOrder-header {
+    cursor: pointer;
+    border: 1px solid gray;
+    border-radius: 10px;
+}
+.dropdownOrder-content {
+    border: 1px solid gray;
+    border-radius: 10px;
+    text-align: left;
+}
+.dropdownOrder-content label {
+    margin-bottom: 5px !important;
+    margin-left: 10px;
 }

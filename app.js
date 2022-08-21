@@ -48,6 +48,7 @@ app.use((req, res, next) => {
     res.locals.error_msg = req.flash('error_msg');
     res.locals.errors_form = req.flash('errors_form');
     res.locals.keep_values = req.flash('keep_values');
+    res.locals.trier = req.session.trier
     next();
 });
 

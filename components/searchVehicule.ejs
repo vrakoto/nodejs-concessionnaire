@@ -7,7 +7,7 @@
 
     <button class="btn btn-primary mt-2 btnSearchFilter" onclick="toggleFilterVehic(this)"><i class="fa-solid fa-filter"></i></button>
 
-    <form class="d-none mt-3" id="filterSearch" action="/parcourir/<%= type %>" method="post">
+    <form class="d-none mt-3" id="filterSearch" action="/parcourir/<%= type %>" onsubmit="removeEmptyFieldUrl(this)">
         <div class="mt-3">
             <label for="marque" class="d-block form-label">Marque</label>
             <input type="text" id="marque" class="form-control" name="marque" placeholder="(Falcultatif) Filtrer par marque" value="<%= (filterValues.marque) ? filterValues.marque : '' %>">
@@ -50,4 +50,23 @@
         <button class="d-block w-100 btn btn-success mt-3" type="submit"><i class="fa-solid fa-filter"></i> Filtrer</button>
         <span class="d-block w-100 btn btn-danger mt-1" onclick="resetForm()"><i class="fa-solid fa-filter-circle-xmark"></i> Effacer le filtre</span>
     </form>
+
+    <div class="mt-3 dropdownOrder">
+        <div class="p-2 d-flex justify-content-between align-items-center dropdownOrder-header" onclick="toggleOrderByMenu(this)">
+            <h4>Trier par</h4>
+            <span id="dropdownOrder-btnToggle"><i class="fa-solid fa-chevron-down"></i></span>
+        </div>
+
+        <form action="/parcourir/<%= type %>" class="p-3 d-none flex-column dropdownOrder-content" id="dropdownOrder-content">
+            <%- radioOrderBy('annonces_recentes', 'Annonces plus récentes', orderBy) %>
+            <%- radioOrderBy('annonces_anciennetes', 'Annonces moins récentes') %>
+            <%- radioOrderBy('km_croissant', 'Kilométrage croissant', orderBy) %>
+            <%- radioOrderBy('km_decroissant', 'Kilométrage décroissant', orderBy) %>
+            <%- radioOrderBy('prix_croissant', 'Prix croissant', orderBy) %>
+            <%- radioOrderBy('prix_decroissant', 'Prix décroissant', orderBy) %>
+
+            <hr>
+            <button type="submit" class="btn btn-primary mt-1">Appliquer</button>
+        </form>
+    </div>
 </div>

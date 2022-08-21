@@ -2,13 +2,12 @@ const pathBodyHTML = '../views/partials/body';
 const { Op } = require('sequelize')
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
-const LocalStrategy = require('passport-local');
 
 const Utilisateur = require('../models/Utilisateur');
 const Vehicule = require('../models/Vehicule');
 const sequelize = require('sequelize');
 const firstUpperCase = require('../public/javascripts/helper').firstUpperCase;
-const filterInput = require('../public/javascripts/helper').filterInput;
+const radioOrderBy = require('../public/javascripts/helper').radioBtnOrderBy;
 
 module.exports = {
     home: (req, res) => {
@@ -41,13 +40,23 @@ module.exports = {
     parcourir: async (req, res) => {
         let titre = "Parcourir"
         const type = (req.params.type) ? req.params.type : "all"
-        const stringValues = { marque, modele } = req.body
-        const intValues = {annee, kmMin, kmMax, prixMin, prixMax} = req.body
+
+        const allParams = req.query
+        const stringValues = { marque, modele, orderBy } = allParams
+        const intValues = {annee, kmMin, kmMax, prixMin, prixMax} = allParams
         const formValues = Object.assign(stringValues, intValues);
 
-        let s = {}
+        let requestFinal = {}
         let f = {}
+        let order = []
         let isSubmit = false
+
+
+        if (type !== 'all') {
+            titre = "Rechercher par " + type;
+            f.type = type
+        }
+
 
         if (stringValues.marque) {
             f.marque = {
@@ -102,23 +111,45 @@ module.exports = {
             isSubmit = true
         }
 
-        if (type !== 'all') {
-            titre = "Rechercher par " + type;
-            f.type = type
+        // Triage
+        switch (stringValues.orderBy) {
+            case 'annonces_anciennetes':
+                order = [ [ 'publication', 'ASC'] ]
+            break;
+
+            case 'km_croissant':
+                order = [ [ 'km', 'ASC'] ]
+            break;
+            case 'km_decroissant':
+                order = [ [ 'km', 'DESC'] ]
+            break;
+
+            case 'prix_croissant':
+                order = [ [ 'prix', 'ASC'] ]
+            break;
+            case 'prix_decroissant':
+                order = [ [ 'prix', 'DESC'] ]
+            break;
+        
+            default:
+                order = [ [ 'publication', 'DESC'] ] // annonces recentes par défaut
+            break;
+        }
+        
+        requestFinal = {
+            where: f,
+            order
         }
 
-        s = {
-            where: f
-        }
-
-        module.exports.getLesVehicules(s).then((lesVehicules) => {
+        module.exports.getLesVehicules(requestFinal).then((lesVehicules) => {
             return res.render(pathBodyHTML, {
                 page: "parcourir",
                 titre: titre,
                 type: type,
                 lesVehicules,
                 filterValues: formValues,
-                isSubmit
+                isSubmit,
+                radioOrderBy
             });
         }).catch(() => {
             return res.render('../views/partials/body', {
