@@ -1,6 +1,6 @@
-<div class="mt-5 container">
+<div class="mt-5 container vehicule">
 
-    <div class="d-flex flex-wrap justify-content-between">
+    <div class="d-flex flex-wrap justify-content-between vehicule-infos-container">
         <img class="iconUsersVehicule" src="<%= vehicule.image %>" class="img-fluid" height="500" width="500">
 
         <div class="card vehicule-infos">
@@ -50,14 +50,14 @@
     </div>
 
     <div class="mt-5 border rounded details">
-        <h3 class="gras">Description</h3>
+        <h3 class="details-title gras">Description</h3>
         <div id="description"><%= (vehicule.description.trim() === '') ? '<i>Cette annonce ne contient aucune description.<i>' : vehicule.description %></div>
     </div>
 
-    <div class="produitsSimilaires mt-5">
-        <h3 class="gras"><%= firstUpperCase(vehicule.type) + '(s)' %> similaires</h3>
+    <div class="mt-5">
+        <h3 class="details-title gras"><%= firstUpperCase(vehicule.type) + '(s)' %> similaire(s)</h3>
 
-        <div class="d-flex flex-wrap">
+        <div class="d-flex flex-wrap produitsSimilaires">
             <%- include("../components/cardVehicule") %>
         </div>
     </div>

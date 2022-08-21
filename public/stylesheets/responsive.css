@@ -1,0 +1,56 @@
+@media screen and (max-width: 1205px) {
+    #filterSearch {
+        margin: 15px;
+    }
+    .vehicule-infos-container {
+        justify-content: center !important;
+    }
+    .iconUsersVehicule {
+        max-width: unset !important;
+        max-height: unset !important;
+        width: 100%;
+        height: auto !important;
+    }
+    .vehicule-infos {
+        margin-top: 20px;
+        width: 100% !important;
+        overflow-y: scroll;
+    }
+    
+    
+    .infos {
+        flex-wrap: wrap;
+    }
+    .infos .info {
+        margin-top: 10px;
+    }
+
+}
+
+@media screen and (max-width: 1085px) {
+    .profil-sesVehicules {
+        margin-top: 30px;
+    }
+}
+
+@media screen and (max-width: 770px) {
+    /* Véhicules similaires */
+    .produitsSimilaires {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .details-title {
+        text-align: center;
+    }
+}
+
+@media screen and (max-width: 410px) {
+    .searchBar {
+        width: unset;
+    }
+
+    #filterSearch {
+        margin: 15px;
+    }
+}
